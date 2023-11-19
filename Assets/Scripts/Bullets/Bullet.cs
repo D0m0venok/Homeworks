@@ -9,36 +9,44 @@ namespace ShootEmUp
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private SpriteRenderer _spriteRenderer;
 
-        private Action<Bullet> _onCollisionCallback;
-        
-        public bool IsPlayer { get; set; }
-        public int Damage { get; set; }
-        
+        private int _damage;
+        private bool _isPlayer;
+        private Action<Bullet> _removeAction;
+        private Func<Vector3, bool> _checkBoundsAction;
+
+        private void FixedUpdate()
+        {
+            if(!_checkBoundsAction.Invoke(transform.position))
+                _removeAction?.Invoke(this);
+        }
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            BulletUtils.DealDamage(this, collision.gameObject);
-            _onCollisionCallback?.Invoke(this);
+            DealDamage(collision.gameObject);
+            _removeAction?.Invoke(this);
         }
 
-        public void SetCollisionCallback(Action<Bullet> action)
+        public void SetBullet(Args args, Func<Vector3, bool> checkBoundsAction, Action<Bullet> removeAction)
         {
-            _onCollisionCallback = action;
+            _rigidbody2D.velocity = args.Velocity;
+            gameObject.layer = args.PhysicsLayer;
+            transform.position = args.Position;
+            _spriteRenderer.color = args.Color;
+            _damage = args.Damage;
+            _isPlayer = args.IsPlayer;
+
+            _checkBoundsAction = checkBoundsAction;
+            _removeAction = removeAction;
         }
-        public void SetVelocity(Vector2 velocity)
+        
+        private void DealDamage(GameObject other)
         {
-            _rigidbody2D.velocity = velocity;
-        }
-        public void SetPhysicsLayer(int physicsLayer)
-        {
-            gameObject.layer = physicsLayer;
-        }
-        public void SetPosition(Vector3 position)
-        {
-            transform.position = position;
-        }
-        public void SetColor(Color color)
-        {
-            _spriteRenderer.color = color;
+            if (!other.TryGetComponent(out Unit unit))
+                return;
+
+            if (_isPlayer == unit.TeamComponent.IsPlayer)
+                return;
+            
+            unit.HitPointsComponent.TakeDamage(_damage);
         }
     }
 }

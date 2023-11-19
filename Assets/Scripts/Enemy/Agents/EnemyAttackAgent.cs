@@ -1,37 +1,31 @@
+using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ShootEmUp
 {
+    [RequireComponent(typeof(WeaponComponent), typeof(EnemyMoveAgent))]
     public sealed class EnemyAttackAgent : MonoBehaviour
     {
-        public delegate void FireHandler(GameObject enemy, Vector2 position, Vector2 direction);
-
-        public event FireHandler Fired;
-
-        [SerializeField] private WeaponComponent _weaponComponent;
-        [SerializeField] private EnemyMoveAgent _moveAgent;
         [SerializeField] private float _countdown = 1;
-
-        private GameObject _target;
+        
+        private WeaponComponent _weaponComponent;
+        private EnemyMoveAgent _moveAgent;
+        private Player _target;
         private float _currentTime;
+        
+        public event Action<Vector2, Vector2> OnFired;
 
-        public void SetTarget(GameObject target)
+        private void Awake()
         {
-            _target = target;
+            _weaponComponent = GetComponent<WeaponComponent>();
+            _moveAgent = GetComponent<EnemyMoveAgent>();
         }
-
-        public void Reset()
-        {
-            _currentTime = _countdown;
-        }
-
         private void FixedUpdate()
         {
             if (!_moveAgent.IsReached)
                 return;
 
-            if (_target.GetComponent<HitPointsComponent>().IsHitPointsExists())
+            if (!_target.HitPointsComponent.IsHitPointsExists())
                 return;
 
             _currentTime -= Time.fixedDeltaTime;
@@ -42,12 +36,18 @@ namespace ShootEmUp
             }
         }
 
+        public void SetTarget(Player target)
+        {
+            _target = target;
+            _currentTime = _countdown;
+        }
+        
         private void Fire()
         {
             var startPosition = _weaponComponent.Position;
             var vector = (Vector2) _target.transform.position - startPosition;
             var direction = vector.normalized;
-            Fired?.Invoke(gameObject, startPosition, direction);
+            OnFired?.Invoke(startPosition, direction);
         }
     }
 }

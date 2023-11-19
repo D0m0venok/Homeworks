@@ -2,13 +2,20 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
+    [RequireComponent(typeof(MoveComponent))]
     public sealed class EnemyMoveAgent : MonoBehaviour
     {
-        [SerializeField] private MoveComponent _moveComponent;
-
+        [SerializeField] private float _positionInaccuracy = 0.25f;
+        
+        private MoveComponent _moveComponent;
         private Vector2 _destination;
         
         public bool IsReached { get; private set; }
+
+        private void Awake()
+        {
+            _moveComponent = GetComponent<MoveComponent>();
+        }
 
         public void SetDestination(Vector2 endPoint)
         {
@@ -22,7 +29,7 @@ namespace ShootEmUp
                 return;
             
             var vector = _destination - (Vector2) transform.position;
-            if (vector.magnitude <= 0.25f)
+            if (vector.magnitude <= _positionInaccuracy)
             {
                 IsReached = true;
                 return;

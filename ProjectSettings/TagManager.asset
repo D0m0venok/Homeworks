@@ -15,11 +15,11 @@ TagManager:
   - 
   - 
   - 
+  - PLAYER
+  - ENEMY
   - 
-  - 
-  - 
-  - 
-  - 
+  - ENEMY_BULLET
+  - PLAYER_BULLET
   - 
   - 
   - 

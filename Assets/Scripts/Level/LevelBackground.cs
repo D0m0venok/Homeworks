@@ -13,9 +13,7 @@ namespace ShootEmUp
         private float _positionX;
         private float _positionZ;
         private Transform _myTransform;
-
         
-
         private void Awake()
         {
             _startPositionY = _params.MStartPositionY;

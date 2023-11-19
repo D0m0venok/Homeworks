@@ -13,7 +13,7 @@ namespace ShootEmUp
         {
             _rigidbody2D = GetComponent<Rigidbody2D>();
         }
-        
+
         public void MoveByRigidbodyVelocity(Vector2 vector)
         {
             var nextPosition = _rigidbody2D.position + vector * _speed;

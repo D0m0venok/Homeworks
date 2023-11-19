@@ -1,15 +1,22 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ShootEmUp
 {
+    [RequireComponent(typeof(Unit))]
     public sealed class HitPointsComponent : MonoBehaviour
     {
-        public event Action<GameObject> CharacterDeath;
-        
         [SerializeField] private int _hitPoints;
-        
+
+        private int _cacheHitPoint;
+        private Unit _unit;
+        public event Action<Unit> OnDeath;
+
+        private void Awake()
+        {
+            _unit = GetComponent<Unit>();
+            _cacheHitPoint = _hitPoints;
+        }
         public bool IsHitPointsExists() 
         {
             return _hitPoints > 0;
@@ -20,7 +27,8 @@ namespace ShootEmUp
             _hitPoints -= damage;
             if (_hitPoints <= 0)
             {
-                CharacterDeath?.Invoke(gameObject);
+                OnDeath?.Invoke(_unit);
+                _hitPoints = _cacheHitPoint;
             }
         }
     }

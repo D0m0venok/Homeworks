@@ -17,7 +17,7 @@ namespace ShootEmUp
             return RandomTransform(_attackPositions);
         }
 
-        private Transform RandomTransform(Transform[] transforms)
+        private static Transform RandomTransform(Transform[] transforms)
         {
             var index = Random.Range(0, transforms.Length);
             return transforms[index];

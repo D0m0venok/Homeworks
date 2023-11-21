@@ -5,6 +5,7 @@ namespace ShootEmUp
     public sealed class PlayerController : MonoBehaviour
     {
         [SerializeField] private Player _player; 
+        [SerializeField] private GameController _gameController;
         [SerializeField] private GameManager _gameManager;
         [Space]
         [SerializeField] private BulletSystem _bulletSystem;
@@ -13,17 +14,19 @@ namespace ShootEmUp
         [SerializeField] private InputFireManager _inputFireManager;
         [SerializeField] private InputMoveManager _inputMoveManager;
 
-        private void OnEnable()
+        private void Awake()
         {
             _player.HitPointsComponent.OnDeath += OnDeath;
             _inputFireManager.OnFired += OnFired;
             _inputMoveManager.OnMoved += _player.MoveComponent.MoveByRigidbodyVelocity;
+            _gameManager.AddListener(_player.MoveComponent);
         }
-        private void OnDisable()
+        private void OnDestroy()
         {
             _player.HitPointsComponent.OnDeath -= OnDeath;
             _inputFireManager.OnFired -= OnFired;
             _inputMoveManager.OnMoved -= _player.MoveComponent.MoveByRigidbodyVelocity;
+            _gameManager.RemoveListener(_player.MoveComponent);
         }
 
         private void OnFired()
@@ -34,7 +37,7 @@ namespace ShootEmUp
         }
         private void OnDeath(Unit unit)
         {
-            _gameManager.FinishGame();
+            _gameController.FinishGame();
         }
     }
 }

@@ -4,27 +4,37 @@ using UnityEngine;
 namespace ShootEmUp
 {
     [RequireComponent(typeof(CircleCollider2D))]
-    public sealed class Bullet : MonoBehaviour
+    public sealed class Bullet : RigidbodyStateController, 
+        IGameFixedUpdateListener, 
+        IGameAttachListener, 
+        IGameDetachListener
     {
-        [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private SpriteRenderer _spriteRenderer;
 
         private int _damage;
         private bool _isPlayer;
         private Action<Bullet> _removeAction;
         private Func<Vector3, bool> _checkBoundsAction;
-
-        private void FixedUpdate()
-        {
-            if(!_checkBoundsAction.Invoke(transform.position))
-                _removeAction?.Invoke(this);
-        }
+        
         private void OnCollisionEnter2D(Collision2D collision)
         {
             DealDamage(collision.gameObject);
             _removeAction?.Invoke(this);
         }
-
+        
+        public void OnFixedUpdate(float fixedDeltaTime)
+        {
+            if(!_checkBoundsAction.Invoke(transform.position))
+                _removeAction?.Invoke(this);
+        }
+        public void AttachGame()
+        {
+            Debug.Log("Bullet enabled for test");
+        }
+        public void DetachGame()
+        {
+            Debug.Log("Bullet disabled for test");
+        }
         public void SetBullet(Args args, Func<Vector3, bool> checkBoundsAction, Action<Bullet> removeAction)
         {
             _rigidbody2D.velocity = args.Velocity;

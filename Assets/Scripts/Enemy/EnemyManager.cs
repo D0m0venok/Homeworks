@@ -2,8 +2,10 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyManager : MonoBehaviour
+    public sealed class EnemyManager : MonoBehaviour, IGameUpdateListener
     {
+        [SerializeField] private GameManager _gameManager;
+        [Space]
         [SerializeField] private BulletSystem _bulletSystem;
         [SerializeField] private BulletConfig _bulletConfig;
         [Space]
@@ -21,19 +23,19 @@ namespace ShootEmUp
 
         private void Awake()
         {
-            _enemyPool = new EnemyPool(_prefab, _container, _initialCount, _initialCount);
+            _enemyPool = new EnemyPool(_prefab, _container, _initialCount, _initialCount, _gameManager);
         }
-        private void Update()
+        public void OnUpdate(float deltaTime)
         {
             if (Time.realtimeSinceStartup - _lastSpawnTime <= _delayBetweenSpawnsTime) 
                 return;
             
-            if (!_enemyPool.TryGet(out var enemy, _worldTransform))
+            if(_initialCount <= _enemyPool.Count)
                 return;
                 
-            SetEnemy(enemy);
+            SetEnemy(_enemyPool.Get(_worldTransform));
         }
-
+        
         private void SetEnemy(Enemy enemy)
         {
             var spawnPosition = _enemyPositions.RandomSpawnPosition();

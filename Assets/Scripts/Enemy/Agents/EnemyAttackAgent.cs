@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ShootEmUp
 {
     [RequireComponent(typeof(WeaponComponent), typeof(EnemyMoveAgent))]
-    public sealed class EnemyAttackAgent : MonoBehaviour
+    public sealed class EnemyAttackAgent : MonoBehaviour, IGameFixedUpdateListener
     {
         [SerializeField] private float _countdown = 1;
         
@@ -20,7 +20,7 @@ namespace ShootEmUp
             _weaponComponent = GetComponent<WeaponComponent>();
             _moveAgent = GetComponent<EnemyMoveAgent>();
         }
-        private void FixedUpdate()
+        public void OnFixedUpdate(float fixedDeltaTime)
         {
             if (!_moveAgent.IsReached)
                 return;
@@ -28,14 +28,13 @@ namespace ShootEmUp
             if (!_target.HitPointsComponent.IsHitPointsExists())
                 return;
 
-            _currentTime -= Time.fixedDeltaTime;
+            _currentTime -= fixedDeltaTime;
             if (_currentTime <= 0)
             {
                 Fire();
                 _currentTime += _countdown;
             }
         }
-
         public void SetTarget(Player target)
         {
             _target = target;

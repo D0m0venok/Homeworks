@@ -12,6 +12,8 @@ namespace ShootEmUp
         private readonly Queue<T> _disabled = new();
         private readonly Transform _disabledParent;
         private readonly int _maxSize;
+
+        public int Count => _active.Count;
         
         protected GameObjectsPool(T prefab, Transform disabledParent, int initSize = 0, int maxSize = int.MaxValue)
         {
@@ -32,7 +34,7 @@ namespace ShootEmUp
             }
         }
 
-        public bool TryGet(out T obj, Transform parent = null)
+        public virtual bool TryGet(out T obj, Transform parent = null)
         {
             obj = default;
             if (_active.Count == _maxSize)
@@ -42,7 +44,7 @@ namespace ShootEmUp
             
             return true;
         }
-        public T Get(Transform parent = null)
+        public virtual T Get(Transform parent = null)
         {
             T obj;
 
@@ -53,13 +55,13 @@ namespace ShootEmUp
             
             return obj;
         }
-        public void Put(T poolObject)
+        public virtual void Put(T obj)
         {
-            if(!_active.Remove(poolObject))
+            if(!_active.Remove(obj))
                 return;
             
-            _disabled.Enqueue(poolObject);
-            poolObject.transform.SetParent(_disabledParent);
+            _disabled.Enqueue(obj);
+            obj.transform.SetParent(_disabledParent);
         }
 
         private T GetOrCreate(Transform parent)

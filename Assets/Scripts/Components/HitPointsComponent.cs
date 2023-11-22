@@ -4,17 +4,16 @@ using UnityEngine;
 namespace ShootEmUp
 {
     [RequireComponent(typeof(Unit))]
-    public sealed class HitPointsComponent : MonoBehaviour
+    public sealed class HitPointsComponent : MonoBehaviour, IGameAttachListener
     {
+        [SerializeField] private Unit _unit;
         [SerializeField] private int _hitPoints;
 
         private int _cacheHitPoint;
-        private Unit _unit;
         public event Action<Unit> OnDeath;
 
-        private void Awake()
+        public void Attach()
         {
-            _unit = GetComponent<Unit>();
             _cacheHitPoint = _hitPoints;
         }
         public bool IsHitPointsExists() 

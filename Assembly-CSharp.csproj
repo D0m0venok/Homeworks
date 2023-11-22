@@ -42,32 +42,41 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Enemy\EnemyManager.cs" />
+     <Compile Include="Assets\Scripts\Common\RigidbodyStateController.cs" />
+     <Compile Include="Assets\Scripts\GameManager\GameManager.cs" />
      <Compile Include="Assets\Scripts\Bullets\BulletSystem.cs" />
      <Compile Include="Assets\Scripts\Enemy\Agents\EnemyMoveAgent.cs" />
      <Compile Include="Assets\Scripts\Enemy\EnemyPositions.cs" />
      <Compile Include="Assets\Scripts\Common\Unit.cs" />
      <Compile Include="Assets\Scripts\Common\GameObjectsPool.cs" />
+     <Compile Include="Assets\Scripts\GameManager\GameListeners.cs" />
      <Compile Include="Assets\Scripts\SOLID\SOLID.cs" />
      <Compile Include="Assets\Scripts\Bullets\BulletConfig.cs" />
-     <Compile Include="Assets\Scripts\SOLID\GRASP.cs" />
      <Compile Include="Assets\Scripts\Level\LevelBounds.cs" />
-     <Compile Include="Assets\Scripts\GameManager\GameManager.cs" />
+     <Compile Include="Assets\Scripts\Enemy\EnemyPool.cs" />
+     <Compile Include="Assets\Scripts\UI\FinishGameController.cs" />
      <Compile Include="Assets\Scripts\Enemy\Enemy.cs" />
      <Compile Include="Assets\Scripts\Components\WeaponComponent.cs" />
      <Compile Include="Assets\Scripts\Components\MoveComponent.cs" />
      <Compile Include="Assets\Scripts\Bullets\Bullet.cs" />
-     <Compile Include="Assets\Scripts\Input\InputMoveManager.cs" />
+     <Compile Include="Assets\Scripts\Bullets\BulletPool.cs" />
+     <Compile Include="Assets\Scripts\Input\MoveInput.cs" />
      <Compile Include="Assets\Scripts\Components\HitPointsComponent.cs" />
-     <Compile Include="Assets\Scripts\Input\InputFireManager.cs" />
+     <Compile Include="Assets\Scripts\Input\FireInput.cs" />
      <Compile Include="Assets\Scripts\Enemy\Agents\EnemyAttackAgent.cs" />
      <Compile Include="Assets\Scripts\Level\LevelBackground.cs" />
-     <Compile Include="Assets\Scripts\Character\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
      <Compile Include="Assets\Scripts\Common\PhysicsLayer.cs" />
      <Compile Include="Assets\Scripts\Components\TeamComponent.cs" />
-     <Compile Include="Assets\Scripts\Bullets\BulletDamageController.cs" />
      <Compile Include="Assets\Scripts\Bullets\Args.cs" />
-     <Compile Include="Assets\Scripts\Character\Player.cs" />
+     <Compile Include="Assets\Scripts\GameManager\GameManagerInstaller.cs" />
+     <Compile Include="Assets\Scripts\Player\Player.cs" />
+     <Compile Include="Assets\Scripts\UI\PauseGameController.cs" />
+     <Compile Include="Assets\Scripts\UI\StartGameController.cs" />
+     <Compile Include="Assets\Scripts\GameManager\IGameListenerProvider.cs" />
+     <Compile Include="Assets\Scripts\Enemy\EnemyPeriodSpawner.cs" />
      <Folder Include="Assets" />
+     <Folder Include="Assets\Scripts\UI" />
      <Folder Include="Assets\Scripts\Enemy\Agents" />
      <Folder Include="Assets\Configs" />
      <Folder Include="Assets\PhysicsMaterials" />
@@ -84,7 +93,7 @@
      <Folder Include="Assets\Scripts\Bullets" />
      <Folder Include="Assets\Scripts\Components" />
      <Folder Include="Assets\Scenes" />
-     <Folder Include="Assets\Scripts\Character" />
+     <Folder Include="Assets\Scripts\Player" />
      <Folder Include="Assets\Scripts\SOLID" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.7f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>

@@ -16,15 +16,17 @@ namespace ShootEmUp
     {
         [SerializeField]
         private GameState _state;
-        
-        public GameState State => _state;
 
+        private readonly HashSet<IGameListener> _listeners = new();
+        private readonly List<IGameStartListener> _startListeners = new();
         private readonly List<IGameFinishListener> _finishListeners = new();
         private readonly List<IGamePauseListener> _pauseListeners = new();
         private readonly List<IGameResumeListener> _resumeListeners = new();
         private readonly List<IGameUpdateListener> _updateListeners = new();
         private readonly List<IGameFixedUpdateListener> _fixedUpdateListeners = new();
-
+        
+        public GameState State => _state;
+        
         private void Update()
         {
             if (_state != GameState.PLAYING)
@@ -51,14 +53,39 @@ namespace ShootEmUp
                 listener.OnFixedUpdate(deltaTime);
             }
         }
-        
-        public void AddListener(IGameListener listener)
+
+        public void AddListeners(IEnumerable<IGameListener> gameListeners)
         {
-            if (listener == null)
+            if(gameListeners == null)
                 return;
 
+            foreach (var listener in gameListeners)
+            {
+                AddListener(listener);
+            }
+        }
+        public void RemoveListeners(IEnumerable<IGameListener> gameListeners)
+        {
+            if(gameListeners == null)
+                return;
+
+            foreach (var listener in gameListeners)
+            {
+                RemoveListener(listener);
+            }
+        }
+        public void AddListener(IGameListener listener)
+        {
+            if (listener == null || _listeners.Contains(listener))
+                return;
+
+            _listeners.Add(listener);
+
             if (listener is IGameAttachListener attachElement)
-                attachElement.AttachGame();
+                attachElement.Attach();
+            
+            if (listener is IGameStartListener startListener)
+                _startListeners.Add(startListener);
             
             if (listener is IGameFinishListener finishListener)
                 _finishListeners.Add(finishListener);
@@ -77,11 +104,16 @@ namespace ShootEmUp
         }
         public void RemoveListener(IGameListener listener)
         {
-            if (listener == null)
+            if (listener == null || !_listeners.Contains(listener))
                 return;
-
+            
+            _listeners.Remove(listener);
+            
             if (listener is IGameDetachListener attachElement)
-                attachElement.DetachGame();
+                attachElement.Detach();
+            
+            if (listener is IGameStartListener startListener)
+                _startListeners.Remove(startListener);
             
             if (listener is IGameFinishListener finishListener)
                 _finishListeners.Remove(finishListener);
@@ -100,6 +132,11 @@ namespace ShootEmUp
         }
         public void StartGame()
         {
+            var cache = GetCashListeners(_startListeners);
+            foreach (var listener in cache)
+            {
+                listener.OnStartGame();
+            }
             _state = GameState.PLAYING;
         }
         public void PauseGame()

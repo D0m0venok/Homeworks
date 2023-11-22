@@ -14,28 +14,13 @@ namespace ShootEmUp
         public override Enemy Get(Transform parent = null)
         {
             var obj = base.Get(parent);
-            AddToListeners(obj);
+            _gameManager.AddListeners(obj.ProvideListeners());
             return obj;
         }
         public override void Put(Enemy obj)
         {
-            RemoveFromListeners(obj);
+            _gameManager.RemoveListeners(obj.ProvideListeners());
             base.Put(obj);
-        }
-
-        private void AddToListeners(Enemy obj)
-        {
-            _gameManager.AddListener(obj.AttackAgent);
-            _gameManager.AddListener(obj.MoveAgent);
-            _gameManager.AddListener(obj.MoveComponent);
-            _gameManager.AddListener(obj);
-        }
-        private void RemoveFromListeners(Enemy obj)
-        {
-            _gameManager.RemoveListener(obj.AttackAgent);
-            _gameManager.RemoveListener(obj.MoveAgent);
-            _gameManager.RemoveListener(obj.MoveComponent);
-            _gameManager.RemoveListener(obj);
         }
     }
 }

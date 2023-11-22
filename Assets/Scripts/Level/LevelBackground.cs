@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class LevelBackground : MonoBehaviour, IGameFixedUpdateListener
+    public sealed class LevelBackground : MonoBehaviour, IGameStartListener, IGameFixedUpdateListener
     {
         [SerializeField] private Params _params;
         
@@ -14,7 +14,7 @@ namespace ShootEmUp
         private float _positionZ;
         private Transform _myTransform;
         
-        private void Awake()
+        public void OnStartGame()
         {
             _startPositionY = _params.MStartPositionY;
             _endPositionY = _params.MEndPositionY;

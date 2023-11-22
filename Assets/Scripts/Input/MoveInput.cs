@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class InputMoveManager : MonoBehaviour, IGameFixedUpdateListener
+    public sealed class MoveInput : MonoBehaviour, IGameFixedUpdateListener
     {
         public event Action<Vector2> OnMoved = delegate {};
 

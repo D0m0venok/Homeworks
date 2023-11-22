@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class BulletSystem : MonoBehaviour
+    public sealed class BulletSystem : MonoBehaviour, IGameStartListener
     {
         [SerializeField] private GameManager _gameManager;
         [Space]
@@ -15,7 +15,7 @@ namespace ShootEmUp
 
         private BulletPool _pool;
 
-        private void Awake()
+        public void OnStartGame()
         {
             _pool = new BulletPool(_prefab, _container, _initialCount, _gameManager);
         }

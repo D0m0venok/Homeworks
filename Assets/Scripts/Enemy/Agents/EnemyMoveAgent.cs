@@ -5,17 +5,13 @@ namespace ShootEmUp
     [RequireComponent(typeof(MoveComponent))]
     public sealed class EnemyMoveAgent : MonoBehaviour, IGameFixedUpdateListener
     {
+        [SerializeField] private MoveComponent _moveComponent;
         [SerializeField] private float _positionInaccuracy = 0.25f;
-        
-        private MoveComponent _moveComponent;
+
         private Vector2 _destination;
         
         public bool IsReached { get; private set; }
 
-        private void Awake()
-        {
-            _moveComponent = GetComponent<MoveComponent>();
-        }
         public void OnFixedUpdate(float fixedDeltaTime)
         {
             if (IsReached)

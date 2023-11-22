@@ -8,18 +8,13 @@ namespace ShootEmUp
     {
         [SerializeField] private float _countdown = 1;
         
-        private WeaponComponent _weaponComponent;
-        private EnemyMoveAgent _moveAgent;
+        [SerializeField] private WeaponComponent _weaponComponent;
+        [SerializeField] private EnemyMoveAgent _moveAgent;
         private Player _target;
         private float _currentTime;
         
         public event Action<Vector2, Vector2> OnFired;
 
-        private void Awake()
-        {
-            _weaponComponent = GetComponent<WeaponComponent>();
-            _moveAgent = GetComponent<EnemyMoveAgent>();
-        }
         public void OnFixedUpdate(float fixedDeltaTime)
         {
             if (!_moveAgent.IsReached)

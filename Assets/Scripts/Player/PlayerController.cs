@@ -2,31 +2,29 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class PlayerController : MonoBehaviour
+    public sealed class PlayerController : MonoBehaviour, IGameStartListener, IGameFinishListener
     {
         [SerializeField] private Player _player; 
-        [SerializeField] private GameController _gameController;
-        [SerializeField] private GameManager _gameManager;
+        [SerializeField] private FinishGameController _finishGameController;
         [Space]
         [SerializeField] private BulletSystem _bulletSystem;
         [SerializeField] private BulletConfig _bulletConfig;
         [Space]
-        [SerializeField] private InputFireManager _inputFireManager;
-        [SerializeField] private InputMoveManager _inputMoveManager;
+        [SerializeField] private FireInput _inputFireManager;
+        [SerializeField] private MoveInput _inputMoveManager;
 
-        private void Awake()
+        public void OnStartGame()
         {
             _player.HitPointsComponent.OnDeath += OnDeath;
             _inputFireManager.OnFired += OnFired;
             _inputMoveManager.OnMoved += _player.MoveComponent.MoveByRigidbodyVelocity;
-            _gameManager.AddListener(_player.MoveComponent);
         }
-        private void OnDestroy()
+        
+        public void OnFinishGame()
         {
             _player.HitPointsComponent.OnDeath -= OnDeath;
             _inputFireManager.OnFired -= OnFired;
             _inputMoveManager.OnMoved -= _player.MoveComponent.MoveByRigidbodyVelocity;
-            _gameManager.RemoveListener(_player.MoveComponent);
         }
 
         private void OnFired()
@@ -37,7 +35,7 @@ namespace ShootEmUp
         }
         private void OnDeath(Unit unit)
         {
-            _gameController.FinishGame();
+            _finishGameController.FinishGame();
         }
     }
 }

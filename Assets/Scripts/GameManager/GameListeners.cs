@@ -1,6 +1,10 @@
 namespace ShootEmUp
 {
     public interface IGameListener{}    
+    public interface IGameStartListener : IGameListener
+    {
+        void OnStartGame();
+    }
     public interface IGameFinishListener : IGameListener
     {
         void OnFinishGame();
@@ -23,10 +27,10 @@ namespace ShootEmUp
     }
     public interface IGameAttachListener : IGameListener
     {
-        void AttachGame();
+        void Attach();
     }
     public interface IGameDetachListener : IGameListener
     {
-        void DetachGame();
+        void Detach();
     }
 }

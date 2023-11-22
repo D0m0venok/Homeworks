@@ -6,7 +6,6 @@ namespace ShootEmUp
     [RequireComponent(typeof(CircleCollider2D))]
     public sealed class Bullet : RigidbodyStateController, 
         IGameFixedUpdateListener, 
-        IGameAttachListener, 
         IGameDetachListener
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -27,13 +26,10 @@ namespace ShootEmUp
             if(!_checkBoundsAction.Invoke(transform.position))
                 _removeAction?.Invoke(this);
         }
-        public void AttachGame()
+        public void Detach()
         {
-            Debug.Log("Bullet enabled for test");
-        }
-        public void DetachGame()
-        {
-            Debug.Log("Bullet disabled for test");
+            _removeAction = null;
+            _checkBoundsAction = null;
         }
         public void SetBullet(Args args, Func<Vector3, bool> checkBoundsAction, Action<Bullet> removeAction)
         {
@@ -55,7 +51,7 @@ namespace ShootEmUp
 
             if (_isPlayer == unit.TeamComponent.IsPlayer)
                 return;
-            
+
             unit.HitPointsComponent.TakeDamage(_damage);
         }
     }

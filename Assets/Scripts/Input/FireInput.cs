@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class InputFireManager : MonoBehaviour, IGameUpdateListener
+    public sealed class FireInput : MonoBehaviour, IGameUpdateListener
     {
         public event Action OnFired = delegate {};
 

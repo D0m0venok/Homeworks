@@ -169,6 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae5daa1be9cc40a78a2f07cd53e5b47e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _unit: {fileID: 8906090459634147754}
   _hitPoints: 3
 --- !u!114 &5568771391735819372
 MonoBehaviour:
@@ -196,6 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bdb5771141e4cf18c434a69ec116e09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _moveComponent: {fileID: 5568771391735819372}
   _positionInaccuracy: 0.25
 --- !u!114 &6896809305229427933
 MonoBehaviour:
@@ -210,6 +212,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _countdown: 1
+  _weaponComponent: {fileID: 5568771391735819374}
+  _moveAgent: {fileID: 8186052948131603766}
 --- !u!114 &8906090459634147754
 MonoBehaviour:
   m_ObjectHideFlags: 0

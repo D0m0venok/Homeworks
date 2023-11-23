@@ -7,22 +7,22 @@ namespace ShootEmUp
 {
     public abstract class GameObjectsPool<T> where T : Component
     {
-        private readonly T _prefab;
+        private T _prefab;
         private readonly List<T> _active = new();
         private readonly Queue<T> _disabled = new();
-        private readonly Transform _disabledParent;
-        private readonly int _maxSize;
+        private Transform _disabledParent;
+        private int _maxSize;
 
         public int Count => _active.Count;
+        public bool HasFreeObject => _active.Count < _maxSize;
         
-        protected GameObjectsPool(T prefab, Transform disabledParent, int initSize = 0, int maxSize = int.MaxValue)
+        protected void Construct(T prefab, Transform disabledParent, int initSize = 0, int maxSize = int.MaxValue)
         {
             if (prefab == null)
                 throw new NullReferenceException();
-
+            
             _prefab = prefab;
             _disabledParent = disabledParent;
-            _maxSize = maxSize;
             
             _maxSize = Mathf.Clamp(maxSize, 1, int.MaxValue);
             initSize = Mathf.Clamp(initSize, 0, _maxSize);

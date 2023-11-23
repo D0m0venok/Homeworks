@@ -1,8 +1,12 @@
+using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ShootEmUp
 {
-    public sealed class PlayerController : MonoBehaviour, IGameStartListener, IGameFinishListener
+    public sealed class PlayerController : MonoBehaviour, 
+        IGameStartListener, 
+        IGameFinishListener
     {
         [SerializeField] private Player _player; 
         [SerializeField] private FinishGameController _finishGameController;
@@ -10,23 +14,20 @@ namespace ShootEmUp
         [SerializeField] private BulletSystem _bulletSystem;
         [SerializeField] private BulletConfig _bulletConfig;
         [Space]
-        [SerializeField] private FireInput _inputFireManager;
-        [SerializeField] private MoveInput _inputMoveManager;
+        [SerializeField] private InputManager _inputManager;
 
         public void OnStartGame()
         {
             _player.HitPointsComponent.OnDeath += OnDeath;
-            _inputFireManager.OnFired += OnFired;
-            _inputMoveManager.OnMoved += _player.MoveComponent.MoveByRigidbodyVelocity;
+            _inputManager.OnFired += OnFired;
+            _inputManager.OnMoved += _player.MoveComponent.MoveByRigidbodyVelocity;
         }
-        
         public void OnFinishGame()
         {
             _player.HitPointsComponent.OnDeath -= OnDeath;
-            _inputFireManager.OnFired -= OnFired;
-            _inputMoveManager.OnMoved -= _player.MoveComponent.MoveByRigidbodyVelocity;
+            _inputManager.OnFired += OnFired;
+            _inputManager.OnMoved += _player.MoveComponent.MoveByRigidbodyVelocity;
         }
-
         private void OnFired()
         {
             _bulletSystem.FlyBulletByArgs(new Args

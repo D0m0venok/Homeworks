@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ShootEmUp
 {
@@ -9,26 +10,22 @@ namespace ShootEmUp
         [SerializeField] private BulletSystem _bulletSystem;
         [SerializeField] private BulletConfig _bulletConfig;
         [Space]
-        [SerializeField] private int _initialCount = 7;
-        [SerializeField] private Enemy _prefab;
-        [SerializeField] private Transform _container;
         [SerializeField] private Transform _worldTransform;
-        [Space]
         [SerializeField] private EnemyPositions _enemyPositions;
         [SerializeField] private Player _player;
-
-        private EnemyPool _enemyPool;
-
-        public bool HasFreeEnemy => _initialCount > _enemyPool.Count;
+        [SerializeField] private EnemyPool _pool;
 
         public void OnStartGame()
         {
-            _enemyPool = new EnemyPool(_prefab, _container, _initialCount, _initialCount, _gameManager);
+            _pool.Construct(_gameManager);
         }
         
-        public void SpawnEnemy()
+        public bool TrySpawnEnemy()
         {
-            var enemy = _enemyPool.Get(_worldTransform);
+            if(!_pool.HasFreeObject)
+                return false;
+            
+            var enemy = _pool.Get(_worldTransform);
             var spawnPosition = _enemyPositions.RandomSpawnPosition();
             enemy.transform.position = spawnPosition.position;
                     
@@ -39,6 +36,8 @@ namespace ShootEmUp
                     
             enemy.HitPointsComponent.OnDeath += OnDeath;
             enemy.AttackAgent.OnFired += OnFired;
+
+            return true;
         }
         private void OnDeath(Unit unit)
         {
@@ -47,7 +46,7 @@ namespace ShootEmUp
                 enemy.HitPointsComponent.OnDeath -= OnDeath;
                 enemy.AttackAgent.OnFired -= OnFired;
 
-                _enemyPool.Put(enemy);
+                _pool.Put(enemy);
             }
         }
         private void OnFired(Vector2 position, Vector2 direction)

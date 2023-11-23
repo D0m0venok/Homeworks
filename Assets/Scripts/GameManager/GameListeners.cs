@@ -23,7 +23,11 @@ namespace ShootEmUp
     }
     public interface IGameFixedUpdateListener : IGameListener
     {
-        void OnFixedUpdate(float deltaTime);
+        void OnFixedUpdate(float fixedDeltaTime);
+    }
+    public interface IGameLateUpdateListener : IGameListener
+    {
+        void OnLateUpdate(float deltaTime);
     }
     public interface IGameAttachListener : IGameListener
     {

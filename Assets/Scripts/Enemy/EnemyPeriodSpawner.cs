@@ -14,12 +14,8 @@ namespace ShootEmUp
             if (Time.realtimeSinceStartup - _lastSpawnTime <= _delayBetweenSpawnsTime) 
                 return;
             
-            if(!_enemyManager.HasFreeEnemy)
-                return;
-
-            _enemyManager.SpawnEnemy();
-            
-            _lastSpawnTime = Time.realtimeSinceStartup;
+            if(_enemyManager.TrySpawnEnemy())
+                _lastSpawnTime = Time.realtimeSinceStartup;
         }
     }
 }

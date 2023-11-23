@@ -1,16 +1,22 @@
+using System;
 using UnityEngine;
 
 namespace ShootEmUp
 {
+    [Serializable]
     internal sealed class EnemyPool : GameObjectsPool<Enemy>
     {
-        private readonly GameManager _gameManager;
+        [SerializeField] private int _initialCount = 7;
+        [SerializeField] private Enemy _enemyPrefab;
+        [SerializeField] private Transform _container;
         
-        public EnemyPool(Enemy prefab, Transform disabledParent, int initSize, int maxSize, GameManager gameManager) : base(prefab, disabledParent, initSize, maxSize)
+        private GameManager _gameManager;
+        
+        public void Construct(GameManager gameManager)
         {
             _gameManager = gameManager;
+            Construct(_enemyPrefab, _container, _initialCount, _initialCount);
         }
-        
         public override Enemy Get(Transform parent = null)
         {
             var obj = base.Get(parent);

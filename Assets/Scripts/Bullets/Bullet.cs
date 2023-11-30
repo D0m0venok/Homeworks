@@ -1,47 +1,57 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ShootEmUp
 {
     [RequireComponent(typeof(CircleCollider2D))]
-    public sealed class Bullet : RigidbodyStateController, 
-        IGameFixedUpdateListener, 
-        IGameDetachListener
+    public sealed class Bullet : MonoBehaviour, 
+        IGameStartListener, IGameFixedUpdateListener, 
+        IGameDetachListener, IGameListenerProvider
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private Rigidbody2D _rigidbody2D;
 
         private int _damage;
         private bool _isPlayer;
-        private Action<Bullet> _removeAction;
-        private Func<Vector3, bool> _checkBoundsAction;
+        private BulletPool _pool;
+        private LevelBounds _levelBounds;
+        private RigidbodyStateController _rigidbodyStateController;
         
+        public void OnStartGame()
+        {
+            _rigidbodyStateController = new RigidbodyStateController(_rigidbody2D);
+        }
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            _pool?.Put(this);
             DealDamage(collision.gameObject);
-            _removeAction?.Invoke(this);
         }
         
         public void OnFixedUpdate(float fixedDeltaTime)
         {
-            if(!_checkBoundsAction.Invoke(transform.position))
-                _removeAction?.Invoke(this);
+            if(!_levelBounds.InBounds(transform.position))
+                _pool?.Put(this);
         }
         public void Detach()
         {
-            _removeAction = null;
-            _checkBoundsAction = null;
+            _pool = null;
         }
-        public void SetBullet(Args args, Func<Vector3, bool> checkBoundsAction, Action<Bullet> removeAction)
+        public IEnumerable<IGameListener> ProvideListeners()
         {
+            yield return _rigidbodyStateController;
+            yield return this;
+        }
+        public void SetBullet(BulletPool pool, LevelBounds levelBounds, Args args)
+        {
+            _pool = pool;
+            _levelBounds = levelBounds;
+            
+            transform.position = args.Position;
             _rigidbody2D.velocity = args.Velocity;
             gameObject.layer = args.PhysicsLayer;
-            transform.position = args.Position;
             _spriteRenderer.color = args.Color;
             _damage = args.Damage;
             _isPlayer = args.IsPlayer;
-
-            _checkBoundsAction = checkBoundsAction;
-            _removeAction = removeAction;
         }
         
         private void DealDamage(GameObject other)

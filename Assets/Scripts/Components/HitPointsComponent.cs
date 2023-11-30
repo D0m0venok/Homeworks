@@ -1,21 +1,20 @@
 using System;
-using UnityEngine;
 
 namespace ShootEmUp
 {
-    [RequireComponent(typeof(Unit))]
-    public sealed class HitPointsComponent : MonoBehaviour, IGameAttachListener
+    public sealed class HitPointsComponent
     {
-        [SerializeField] private Unit _unit;
-        [SerializeField] private int _hitPoints;
+        private readonly Unit _unit;
+        private int _hitPoints;
+        private readonly int _cacheHitPoint;
 
-        private int _cacheHitPoint;
-        public event Action<Unit> OnDeath;
-
-        public void Attach()
+        public HitPointsComponent(Unit unit, int hitPoints)
         {
-            _cacheHitPoint = _hitPoints;
+            _unit = unit;
+            _cacheHitPoint = _hitPoints = hitPoints;
         }
+        public event Action<Unit> OnDeath;
+        
         public bool IsHitPointsExists() 
         {
             return _hitPoints > 0;

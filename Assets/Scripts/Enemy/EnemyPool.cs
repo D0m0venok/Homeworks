@@ -1,21 +1,17 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 namespace ShootEmUp
 {
-    [Serializable]
-    internal sealed class EnemyPool : GameObjectsPool<Enemy>
+    public sealed class EnemyPool : GameObjectsPool<Enemy>
     {
-        [SerializeField] private int _initialCount = 7;
-        [SerializeField] private Enemy _enemyPrefab;
-        [SerializeField] private Transform _container;
+        private readonly GameManager _gameManager;
         
-        private GameManager _gameManager;
-        
-        public void Construct(GameManager gameManager)
+        public EnemyPool(GameManager gameManager, DiContainer diContainer, Settings settings, Transform container) : 
+            base(settings.EnemyPrefab, diContainer, container, settings.InitialCount, settings.MaxCount)
         {
             _gameManager = gameManager;
-            Construct(_enemyPrefab, _container, _initialCount, _initialCount);
         }
         public override Enemy Get(Transform parent = null)
         {
@@ -27,6 +23,22 @@ namespace ShootEmUp
         {
             _gameManager.RemoveListeners(obj.ProvideListeners());
             base.Put(obj);
+        }
+        protected override Enemy Create()
+        {
+            var obj = base.Create();
+
+            _diContainer.Inject(obj);
+            obj.OnStartGame();
+            return obj;
+        }
+
+        [Serializable]
+        public class Settings
+        {
+            public int InitialCount = 7;
+            public int MaxCount = 7;
+            public Enemy EnemyPrefab;
         }
     }
 }

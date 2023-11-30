@@ -12,25 +12,22 @@ namespace ShootEmUp
         PAUSED = 2,
         FINISHED = 3
     }
-    
+
     public sealed class GameManager : MonoBehaviour
     {
-        [SerializeField]
         private GameState _state;
-
         private readonly HashSet<IGameListener> _cacheListeners = new();
-        private readonly DictionaryKeyTypeValueHashSet<IGameListener> _listeners = new();
-        
+        private readonly Listeners<IGameListener> _listeners = new();
+
         public GameState State => _state;
-        
+
         private void Update()
         {
             if (!IsPlaying())
                 return;
 
             var deltaTime = Time.deltaTime;
-
-            _listeners.CacheForEach<IGameUpdateListener>(listener => listener.OnUpdate(deltaTime), () => !IsPlaying());
+            _listeners.CacheForEach<IGameUpdateListener>(listener => listener.OnUpdate(deltaTime));
         }
         private void FixedUpdate()
         {
@@ -39,7 +36,7 @@ namespace ShootEmUp
 
             var deltaTime = Time.fixedDeltaTime;
 
-            _listeners.CacheForEach<IGameFixedUpdateListener>(listener => listener.OnFixedUpdate(deltaTime), () => !IsPlaying());
+            _listeners.CacheForEach<IGameFixedUpdateListener>(listener => listener.OnFixedUpdate(deltaTime));
         }
         private void LateUpdate()
         {
@@ -48,12 +45,12 @@ namespace ShootEmUp
 
             var deltaTime = Time.deltaTime;
 
-            _listeners.CacheForEach<IGameLateUpdateListener>(listener => listener.OnLateUpdate(deltaTime), () => !IsPlaying());
+            _listeners.CacheForEach<IGameLateUpdateListener>(listener => listener.OnLateUpdate(deltaTime));
         }
 
         public void AddListeners(IEnumerable<IGameListener> gameListeners)
         {
-            if(gameListeners == null)
+            if (gameListeners == null)
                 return;
 
             foreach (var listener in gameListeners)
@@ -63,7 +60,7 @@ namespace ShootEmUp
         }
         public void RemoveListeners(IEnumerable<IGameListener> gameListeners)
         {
-            if(gameListeners == null)
+            if (gameListeners == null)
                 return;
 
             foreach (var listener in gameListeners)
@@ -83,10 +80,10 @@ namespace ShootEmUp
 
             if (listener is IGameAttachListener attachElement)
                 attachElement.Attach();
-            
+
             if (listener is IGameStartListener startListener)
                 _listeners.Add(startListener);
-            
+
             if (listener is IGameFinishListener finishListener)
                 _listeners.Add(finishListener);
 
@@ -101,7 +98,7 @@ namespace ShootEmUp
 
             if (listener is IGameFixedUpdateListener fixedUpdateListener)
                 _listeners.Add(fixedUpdateListener);
-            
+
             if (listener is IGameLateUpdateListener lateUpdateListener)
                 _listeners.Add(lateUpdateListener);
         }
@@ -111,13 +108,13 @@ namespace ShootEmUp
                 return;
 
             _cacheListeners.Remove(listener);
-            
+
             if (listener is IGameDetachListener attachElement)
                 attachElement.Detach();
-            
+
             if (listener is IGameStartListener startListener)
                 _listeners.Remove(startListener);
-            
+
             if (listener is IGameFinishListener finishListener)
                 _listeners.Remove(finishListener);
 
@@ -133,104 +130,107 @@ namespace ShootEmUp
             if (listener is IGameFixedUpdateListener fixedUpdateListener)
                 _listeners.Remove(fixedUpdateListener);
         }
-        public void StartGame()
+        public void SetState(GameState state)
         {
-            _listeners.CacheForEach<IGameStartListener>(listener => listener.OnStartGame());
-            _state = GameState.PLAYING;
-        }
-        public void PauseGame()
-        {
-            _listeners.CacheForEach<IGamePauseListener>(listener => listener.OnPauseGame());
-            _state = GameState.PAUSED;
-        }
-        public void ResumeGame()
-        {
-            _listeners.CacheForEach<IGameResumeListener>(listener => listener.OnResumeGame());
+            if (_state == state)
+                return;
 
-            _state = GameState.PLAYING;
+            switch (state)
+            {
+                case GameState.PLAYING:
+                    _listeners.IsEnable = true;
+                    if (_state == GameState.PAUSED)
+                        _listeners.CacheForEach<IGameResumeListener>(listener => listener.OnResumeGame());
+                    else
+                        _listeners.CacheForEach<IGameStartListener>(listener => listener.OnStartGame());
+                    break;
+                case GameState.PAUSED:
+                    _listeners.CacheForEach<IGamePauseListener>(listener => listener.OnPauseGame());
+                    _listeners.IsEnable = false;
+                    break;
+                case GameState.FINISHED:
+                    _listeners.CacheForEach<IGameFinishListener>(listener => listener.OnFinishGame());
+                    _listeners.IsEnable = false;
+                    break;
+            }
+
+            _state = state;
         }
-        public void FinishGame()
-        {
-            _listeners.CacheForEach<IGameFinishListener>(listener => listener.OnFinishGame());
-            _state = GameState.FINISHED;
-        }
-        
         private bool IsPlaying()
         {
-            return _state == GameState.PLAYING;
-        } 
-    }
-
-    internal class DictionaryKeyTypeValueHashSet<TType>
-    {
-        private readonly Dictionary<Type, HashSet<TType>> _dictionary = new();
-
-        public void Add<T>(T value) where T : TType
-        {
-            var type = typeof(T);
-            if(!_dictionary.ContainsKey(type))
-                _dictionary.Add(type, new HashSet<TType>());
-
-            _dictionary[type].Add(value);
+            return State == GameState.PLAYING;
         }
-        public void Remove<T>(T value) where T : TType
+        
+        private class Listeners<TValue>
         {
-            var type = typeof(T);
-            if(!_dictionary.ContainsKey(type))
-                return;
+            private readonly Dictionary<Type, HashSet<TValue>> _listeners = new();
 
-            
-            _dictionary[type].Remove(value);
-        }
-        public bool ContainsKey(Type key)
-        {
-            return _dictionary.ContainsKey(key);
-        }
-        public bool ContainsValue<T>(T value)  where T : TType
-        {
-            var type = typeof(T);
-            if (!ContainsKey(type))
-                return false;
-            
-            return _dictionary[type].Contains(value);
-        }
-        public void ForEach<T>(Action<T> action, Func<bool> canBeCanceled = null) where T : TType
-        {
-            if(action == null)
-                return;
-            
-            var type = typeof(T);
-            if(!_dictionary.ContainsKey(type))
-                return;
+            public bool IsEnable { get; set; }
 
-            foreach (var value in _dictionary[type])
+            public void Add<T>(T value) where T : TValue
             {
-                if(canBeCanceled != null && canBeCanceled())
-                    break;
-                
-                action.Invoke((T)value);
+                var type = typeof(T);
+                if (!_listeners.ContainsKey(type))
+                    _listeners.Add(type, new HashSet<TValue>());
+
+                _listeners[type].Add(value);
             }
-        }
-        public void CacheForEach<T>(Action<T> action, Func<bool> canBeCanceled = null) where T : TType
-        {
-            if(action == null)
-                return;
-            
-            var type = typeof(T);
-            if(!_dictionary.ContainsKey(type))
-                return;
-
-            var cache = _dictionary[type].ToArray().AsSpan();
-            foreach (var value in cache)
+            public void Remove<T>(T value) where T : TValue
             {
-                if (canBeCanceled != null && canBeCanceled())
+                var type = typeof(T);
+                if (!_listeners.ContainsKey(type))
+                    return;
+
+                _listeners[type].Remove(value);
+            }
+            public bool ContainsKey(Type key)
+            {
+                return _listeners.ContainsKey(key);
+            }
+            public bool ContainsValue<T>(T value)  where T : TValue
+            {
+                var type = typeof(T);
+                if (!ContainsKey(type))
+                    return false;
+                
+                return _listeners[type].Contains(value);
+            }
+            public void ForEach<T>(Action<T> action) where T : TValue
+            {
+                if(action == null)
+                    return;
+                
+                var type = typeof(T);
+                if(!_listeners.ContainsKey(type))
+                    return;
+            
+                foreach (var value in _listeners[type])
                 {
-                    Debug.Log("Breack");
-                    break;
+                    action.Invoke((T)value);
                 }
-                
-                action.Invoke((T)value);
+            }
+            public TValue[] Get<T>() where T : TValue
+            {
+                var type = typeof(T);
+                return _listeners[type].ToArray();
+            }
+            public void CacheForEach<T>(Action<T> action) where T : TValue
+            {
+                if (action == null)
+                    return;
+
+                var type = typeof(T);
+                if (!_listeners.ContainsKey(type))
+                    return;
+
+                foreach (var value in _listeners[type].ToArray())
+                {
+                    if(!IsEnable)
+                        break;
+                    
+                    action.Invoke((T)value);
+                }
             }
         }
-    } 
+    }
 }

@@ -1,12 +1,19 @@
 using UnityEngine;
+using Zenject;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyPositions : MonoBehaviour
+    public sealed class EnemyPositions
     {
-        [SerializeField] private Transform[] _spawnPositions;
-        [SerializeField] private Transform[] _attackPositions;
-
+        private Transform[] _spawnPositions;
+        private Transform[] _attackPositions;
+        
+        [Inject]
+        public void Construct(Transform[] spawnPositions, Transform[] attackPositions)
+        {
+            _spawnPositions = spawnPositions;
+            _attackPositions = attackPositions;
+        }
         public Transform RandomSpawnPosition()
         {
             return RandomTransform(_spawnPositions);

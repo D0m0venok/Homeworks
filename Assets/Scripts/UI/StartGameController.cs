@@ -2,20 +2,24 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace ShootEmUp
 {
     public sealed class StartGameController : MonoBehaviour
     {
         private const int DELAY_SECONDS = 1;
-        
-        [SerializeField] private GameManager _gameManager;
+
         [SerializeField] private Button _startButton;
         [SerializeField] private Text _text;
         [SerializeField] private int _timeToStart = 3;
+        
+        private GameManager _gameManager;
 
-        private void Awake()
+        [Inject]
+        private void Construct(GameManager gameManager)
         {
+            _gameManager = gameManager;
             _startButton.onClick.AddListener(StartGame);
         }
 
@@ -29,7 +33,7 @@ namespace ShootEmUp
                 
                 await Task.Delay(TimeSpan.FromSeconds(DELAY_SECONDS));
             }
-            _gameManager.StartGame();
+            _gameManager.SetState(GameState.PLAYING);
             gameObject.SetActive(false);
         }
     }

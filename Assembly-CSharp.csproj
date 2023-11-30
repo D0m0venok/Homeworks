@@ -52,19 +52,24 @@
      <Compile Include="Assets\Scripts\Common\GameObjectsPool.cs" />
      <Compile Include="Assets\Scripts\GameManager\GameListeners.cs" />
      <Compile Include="Assets\Scripts\SOLID\SOLID.cs" />
-     <Compile Include="Assets\Scripts\Bullets\BulletConfig.cs" />
+     <Compile Include="Assets\Scripts\Isntallers\GameSceneGUIInstaller.cs" />
+     <Compile Include="Assets\Scripts\Bullets\BulletSettings.cs" />
      <Compile Include="Assets\Scripts\Level\LevelBounds.cs" />
      <Compile Include="Assets\Scripts\Enemy\EnemyPool.cs" />
      <Compile Include="Assets\Scripts\UI\FinishGameController.cs" />
-     <Compile Include="Assets\Scripts\Input\InputManager.cs" />
+     <Compile Include="Assets\Scripts\Input\InputSystemManager.cs" />
      <Compile Include="Assets\Scripts\Enemy\Enemy.cs" />
+     <Compile Include="Assets\Scripts\Isntallers\BootstrapInstaller.cs" />
      <Compile Include="Assets\Scripts\Components\WeaponComponent.cs" />
+     <Compile Include="Assets\Scripts\Isntallers\EnemySystemInstaller.cs" />
      <Compile Include="Assets\Scripts\Enemy\EnemyPeriodSpawner.cs" />
      <Compile Include="Assets\Scripts\Components\MoveComponent.cs" />
      <Compile Include="Assets\Scripts\Bullets\Bullet.cs" />
      <Compile Include="Assets\Scripts\Bullets\BulletPool.cs" />
+     <Compile Include="Assets\Scripts\Isntallers\BulletSystemInstaller.cs" />
      <Compile Include="Assets\Scripts\Components\HitPointsComponent.cs" />
      <Compile Include="Assets\Resources\Controls\Controls.cs" />
+     <Compile Include="Assets\Scripts\Input\IMoveInput.cs" />
      <Compile Include="Assets\Scripts\Enemy\Agents\EnemyAttackAgent.cs" />
      <Compile Include="Assets\Scripts\Level\LevelBackground.cs" />
      <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
@@ -72,13 +77,14 @@
      <Compile Include="Assets\Scripts\Components\TeamComponent.cs" />
      <Compile Include="Assets\Scripts\Bullets\Args.cs" />
      <Compile Include="Assets\Scripts\GameManager\IGameListenerProvider.cs" />
+     <Compile Include="Assets\Scripts\Isntallers\GameSettingsInstaller.cs" />
      <Compile Include="Assets\Scripts\UI\StartGameController.cs" />
      <Compile Include="Assets\Scripts\GameManager\GameManagerInstaller.cs" />
      <Compile Include="Assets\Scripts\Player\Player.cs" />
+     <Compile Include="Assets\Scripts\Input\IFireInput.cs" />
      <Folder Include="Assets" />
      <Folder Include="Assets\Scripts\UI" />
      <Folder Include="Assets\Scripts\Enemy\Agents" />
-     <Folder Include="Assets\Configs" />
      <Folder Include="Assets\Resources\Controls" />
      <Folder Include="Assets\PhysicsMaterials" />
      <Folder Include="Assets\Scripts\GameManager" />
@@ -96,6 +102,7 @@
      <Folder Include="Assets\Scenes" />
      <Folder Include="Assets\Scripts\Player" />
      <Folder Include="Assets\Scripts\SOLID" />
+     <Folder Include="Assets\Scripts\Isntallers" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.7f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
      </Reference>
@@ -338,6 +345,9 @@
      </Reference>
      <Reference Include="UnityEditor.UnityConnectModule">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.7f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
+     </Reference>
+     <Reference Include="Zenject-usage">
+     <HintPath>D:\Dev\Learning\OTUS\Homeworks\Assets\Plugins\Zenject\Source\Usage\Zenject-usage.dll</HintPath>
      </Reference>
      <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
      <HintPath>D:\Dev\Learning\OTUS\Homeworks\Library\PackageCache\com.unity.visualscripting@1.7.8\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
@@ -756,9 +766,6 @@
      <Reference Include="Unity.TestTools.CodeCoverage.Editor.OpenCover.Mono.Reflection">
      <HintPath>D:\Dev\Learning\OTUS\Homeworks\Library\ScriptAssemblies\Unity.TestTools.CodeCoverage.Editor.OpenCover.Mono.Reflection.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.VisualScripting.Flow">
-     <HintPath>D:\Dev\Learning\OTUS\Homeworks\Library\ScriptAssemblies\Unity.VisualScripting.Flow.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEditor.UI">
      <HintPath>D:\Dev\Learning\OTUS\Homeworks\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
      </Reference>
@@ -770,6 +777,9 @@
      </Reference>
      <Reference Include="Unity.PlasticSCM.Editor">
      <HintPath>D:\Dev\Learning\OTUS\Homeworks\Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
+     </Reference>
+     <Reference Include="Unity.VisualScripting.Flow">
+     <HintPath>D:\Dev\Learning\OTUS\Homeworks\Library\ScriptAssemblies\Unity.VisualScripting.Flow.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.UI">
      <HintPath>D:\Dev\Learning\OTUS\Homeworks\Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
@@ -803,6 +813,14 @@
      </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Zenject-Editor.csproj">
+      <Project>{1638f17a-f314-ed34-20ce-3cf5f26fb23d}</Project>
+      <Name>Zenject-Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Zenject.csproj">
+      <Project>{74e13292-f82a-8702-fdd9-01736baa8051}</Project>
+      <Name>Zenject</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -2,12 +2,16 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public abstract class RigidbodyStateController : MonoBehaviour, 
-        IGameFinishListener, IGamePauseListener, IGameResumeListener
+    public class RigidbodyStateController : IGameFinishListener, 
+        IGamePauseListener, IGameResumeListener
     {
-        [SerializeField] protected Rigidbody2D _rigidbody2D;
-
+        protected readonly Rigidbody2D _rigidbody2D;
         private Vector2 _cacheVelocity;
+
+        public RigidbodyStateController(Rigidbody2D rigidbody2D)
+        {
+            _rigidbody2D = rigidbody2D;
+        }
 
         public void OnFinishGame()
         {

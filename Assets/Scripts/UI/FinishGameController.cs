@@ -1,15 +1,23 @@
 using UnityEngine;
+using Zenject;
+
 
 namespace ShootEmUp
 {
     public sealed class FinishGameController : MonoBehaviour
     {
-        [SerializeField] private GameManager _gameManager;
+        private GameManager _gameManager;
+
+        [Inject]
+        private void Construct(GameManager gameManager)
+        {
+            _gameManager = gameManager;
+        }
         
         public void FinishGame()
         {
             gameObject.SetActive(true);
-            _gameManager.FinishGame();
+            _gameManager.SetState(GameState.FINISHED);
         }
     }
 }

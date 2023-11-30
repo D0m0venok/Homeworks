@@ -1,18 +1,23 @@
-using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace ShootEmUp
 {
     [RequireComponent(typeof(GameManager))]
     public sealed class GameManagerInstaller : MonoBehaviour
     {
-        [SerializeReference] 
-        private List<MonoBehaviour> _additionalGameListeners = new();
+        [SerializeField] private MonoBehaviour[] _additionalGameListeners;
         
-        private void Awake()
+        [Inject]
+        private void Construct(IGameListener[] listeners)
         {
             var manager = GetComponent<GameManager>();
-            var listeners = GetComponentsInChildren<IGameListener>();
+            foreach (var listener in listeners)
+            {
+                manager.AddListener(listener);   
+            }
+            
+            listeners = GetComponentsInChildren<IGameListener>();
 
             foreach (var listener in listeners)
             {

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c06d01efff2c42309cfc65df3e96525a, type: 3}
+  m_Name: GameSettings Installer
+  m_EditorClassIdentifier: 
+  _enemiesPool:
+    InitialCount: 7
+    MaxCount: 7
+    EnemyPrefab: {fileID: 8906090459634147754, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
+  _booletsPool:
+    InitialCount: 20
+    BulletPrefab: {fileID: 201757604187811891, guid: 5fe72886874b4e445b06cf777ca4920d, type: 3}
+  _enemyManager:
+    BulletSettings:
+      PhysicsLayer: 13
+      Color: {r: 0.78431374, g: 0.15686275, b: 0.15686275, a: 1}
+      Damage: 1
+      Speed: 2
+  _playerController:
+    BulletSettings:
+      PhysicsLayer: 14
+      Color: {r: 0.15686275, g: 0.15686275, b: 0.78431374, a: 1}
+      Damage: 1
+      Speed: 3
+  _playerSettings:
+    HitPoint: 5
+    IsPlayer: 1
+    Speed: 5
+  _enemySettings:
+    HitPoint: 3
+    IsPlayer: 0
+    Speed: 5
+    PositionInaccuracy: 0.25
+    ShootDelay: 1

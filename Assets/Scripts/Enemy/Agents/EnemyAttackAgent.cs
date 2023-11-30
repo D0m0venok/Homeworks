@@ -3,18 +3,22 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    [RequireComponent(typeof(WeaponComponent), typeof(EnemyMoveAgent))]
-    public sealed class EnemyAttackAgent : MonoBehaviour, IGameFixedUpdateListener
+    public sealed class EnemyAttackAgent : IGameFixedUpdateListener
     {
-        [SerializeField] private float _countdown = 1;
-        
-        [SerializeField] private WeaponComponent _weaponComponent;
-        [SerializeField] private EnemyMoveAgent _moveAgent;
+        private readonly WeaponComponent _weaponComponent;
+        private readonly EnemyMoveAgent _moveAgent;
+        private readonly float _shootDelay;
         private Player _target;
         private float _currentTime;
         
         public event Action<Vector2, Vector2> OnFired;
 
+        public EnemyAttackAgent(Enemy enemy, float shootDelay)
+        {
+            _weaponComponent = enemy.WeaponComponent;
+            _moveAgent = enemy.MoveAgent;
+            _shootDelay = shootDelay;
+        }
         public void OnFixedUpdate(float fixedDeltaTime)
         {
             if (!_moveAgent.IsReached)
@@ -27,13 +31,13 @@ namespace ShootEmUp
             if (_currentTime <= 0)
             {
                 Fire();
-                _currentTime += _countdown;
+                _currentTime += _shootDelay;
             }
         }
         public void SetTarget(Player target)
         {
             _target = target;
-            _currentTime = _countdown;
+            _currentTime = _shootDelay;
         }
         
         private void Fire()

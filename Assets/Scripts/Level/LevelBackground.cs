@@ -1,12 +1,11 @@
 using System;
 using UnityEngine;
+using Zenject;
 
 namespace ShootEmUp
 {
-    public sealed class LevelBackground : MonoBehaviour, IGameStartListener, IGameFixedUpdateListener
+    public sealed class LevelBackground : IGameFixedUpdateListener
     {
-        [SerializeField] private Params _params;
-        
         private float _startPositionY;
         private float _endPositionY;
         private float _movingSpeedY;
@@ -14,11 +13,12 @@ namespace ShootEmUp
         private float _positionZ;
         private Transform _myTransform;
         
-        public void OnStartGame()
+        [Inject]
+        public void Construct(Transform transform, Params parameters)
         {
-            _startPositionY = _params.MStartPositionY;
-            _endPositionY = _params.MEndPositionY;
-            _movingSpeedY = _params.MMovingSpeedY;
+            _startPositionY = parameters.MStartPositionY;
+            _endPositionY = parameters.MEndPositionY;
+            _movingSpeedY = parameters.MMovingSpeedY;
             _myTransform = transform;
             var position = _myTransform.position;
             _positionX = position.x;

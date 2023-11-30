@@ -1,35 +1,39 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace ShootEmUp
 {
-    public abstract class GameObjectsPool<T> where T : Component
+    public abstract class GameObjectsPool<T> where T : Component, IGameStartListener
     {
-        private T _prefab;
-        private readonly List<T> _active = new();
+        private readonly T _prefab;
+        private readonly HashSet<T> _active = new();
         private readonly Queue<T> _disabled = new();
-        private Transform _disabledParent;
-        private int _maxSize;
+        private readonly Transform _container;
+        private readonly int _maxSize;
+        protected readonly DiContainer _diContainer;
 
         public int Count => _active.Count;
         public bool HasFreeObject => _active.Count < _maxSize;
-        
-        protected void Construct(T prefab, Transform disabledParent, int initSize = 0, int maxSize = int.MaxValue)
+
+        protected GameObjectsPool(T prefab, DiContainer diContainer, Transform container, int initSize = 0, int maxSize = int.MaxValue)
         {
             if (prefab == null)
                 throw new NullReferenceException();
             
             _prefab = prefab;
-            _disabledParent = disabledParent;
+            _container = container;
+            _diContainer = diContainer;
             
             _maxSize = Mathf.Clamp(maxSize, 1, int.MaxValue);
             initSize = Mathf.Clamp(initSize, 0, _maxSize);
             
             for (var i = 0; i < initSize; i++)
             {
-                var obj = Object.Instantiate(_prefab, _disabledParent);
+                var obj = Create();
+                obj.transform.SetParent(_container);
                 _disabled.Enqueue(obj);
             }
         }
@@ -61,15 +65,21 @@ namespace ShootEmUp
                 return;
             
             _disabled.Enqueue(obj);
-            obj.transform.SetParent(_disabledParent);
+            obj.transform.SetParent(_container);
         }
 
         private T GetOrCreate(Transform parent)
         {
-            var obj = _disabled.Count > 0 ? _disabled.Dequeue() : Object.Instantiate(_prefab);
+            var obj = _disabled.Count > 0 ? _disabled.Dequeue() : Create();
+            
             obj.transform.SetParent(parent);
             _active.Add(obj);
+
             return obj;
+        }
+        protected virtual T Create()
+        {
+            return Object.Instantiate(_prefab);
         }
     }
 }

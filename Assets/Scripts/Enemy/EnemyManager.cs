@@ -1,23 +1,26 @@
+using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyManager : MonoBehaviour, IGameStartListener
+    public sealed class EnemyManager
     {
-        [SerializeField] private GameManager _gameManager;
-        [Space]
-        [SerializeField] private BulletSystem _bulletSystem;
-        [SerializeField] private BulletConfig _bulletConfig;
-        [Space]
-        [SerializeField] private Transform _worldTransform;
-        [SerializeField] private EnemyPositions _enemyPositions;
-        [SerializeField] private Player _player;
-        [SerializeField] private EnemyPool _pool;
-
-        public void OnStartGame()
+        private readonly BulletSystem _bulletSystem;
+        private readonly BulletSettings _bulletSettings;
+        private readonly Player _player;
+        private readonly EnemyPositions _enemyPositions;
+        private readonly EnemyPool _pool;
+        private readonly Transform _worldTransform;
+        
+        public EnemyManager(BulletSystem bulletSystem, Settings settings, Player player, 
+            EnemyPool pool, EnemyPositions enemyPositions, Transform worldTransform)
         {
-            _pool.Construct(_gameManager);
+            _bulletSystem = bulletSystem;
+            _bulletSettings = settings.BulletSettings;
+            _player = player;
+            _enemyPositions = enemyPositions;
+            _pool = pool;
+            _worldTransform = worldTransform;
         }
         
         public bool TrySpawnEnemy()
@@ -52,7 +55,13 @@ namespace ShootEmUp
         private void OnFired(Vector2 position, Vector2 direction)
         {
             _bulletSystem.FlyBulletByArgs(new Args
-                (position, direction * _bulletConfig.Speed, _bulletConfig.Color, _bulletConfig.Layer, _bulletConfig.Damage, false));
+                (position, direction * _bulletSettings.Speed, _bulletSettings.Color, _bulletSettings.PhysicsLayer, _bulletSettings.Damage, false));
+        }
+        
+        [Serializable]
+        public class Settings
+        {
+             public BulletSettings BulletSettings;
         }
     }
 }

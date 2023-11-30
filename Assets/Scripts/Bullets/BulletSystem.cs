@@ -2,26 +2,22 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class BulletSystem : MonoBehaviour, IGameStartListener
+    public sealed class BulletSystem
     {
-        [SerializeField] private GameManager _gameManager;
-        [SerializeField] private Transform _worldTransform;
-        [SerializeField] private LevelBounds _levelBounds;
-        [Space]
-        [SerializeField] private BulletPool _pool;
+        private readonly BulletPool _pool;
+        private readonly LevelBounds _levelBounds;
+        private readonly Transform _worldTransform;
 
-        public void OnStartGame()
+        public BulletSystem(BulletPool pool, LevelBounds levelBounds, Transform worldTransform)
         {
-            _pool.Construct(_gameManager);
+            _pool = pool;
+            _levelBounds = levelBounds;
+            _worldTransform = worldTransform;
         }
+        
         public void FlyBulletByArgs(Args args)
         {
-            _pool.Get(_worldTransform).SetBullet(args, _levelBounds.InBounds, RemoveBullet);
-        }
-
-        private void RemoveBullet(Bullet bullet)
-        {
-            _pool.Put(bullet);
+            _pool.Get(_worldTransform).SetBullet(_pool, _levelBounds, args);
         }
     }
 }

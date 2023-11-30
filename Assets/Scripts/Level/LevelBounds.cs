@@ -1,22 +1,30 @@
+using System.Linq;
 using UnityEngine;
+using Zenject;
 
 namespace ShootEmUp
 {
-    public sealed class LevelBounds : MonoBehaviour
+    public sealed class LevelBounds
     {
-        [SerializeField] private Transform _leftBorder;
-        [SerializeField] private Transform _rightBorder;
-        [SerializeField] private Transform _downBorder;
-        [SerializeField] private Transform _topBorder;
-        
+        private float _minX;
+        private float _maxX;
+        private float _minY;
+        private float _maxY;
+
+        [Inject]
+        public void Construct(Transform[] borders)
+        {
+            _minX = borders.Min(b => b.position.x);
+            _maxX = borders.Max(b => b.position.x);
+            _minY = borders.Min(b => b.position.y);
+            _maxY = borders.Max(b => b.position.y);
+        }
         public bool InBounds(Vector3 position)
         {
             var positionX = position.x;
             var positionY = position.y;
-            return positionX > _leftBorder.position.x
-                   && positionX < _rightBorder.position.x
-                   && positionY > _downBorder.position.y
-                   && positionY < _topBorder.position.y;
+            return positionX > _minX && positionX < _maxX 
+                && positionY > _minY && positionY < _maxY;
         }
     }
 }

@@ -1,18 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 namespace ShootEmUp
 {
     public sealed class PauseGameController : MonoBehaviour, IGameStartListener, IGameFinishListener
     {
-        [SerializeField] private GameManager _gameManager;
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Text _text;
         
+        private GameManager _gameManager;
+
         private bool _isPause;
         
-        private void Awake()
+        [Inject]
+        private void Construct(GameManager gameManager)
         {
+            _gameManager = gameManager;
+            
             _pauseButton.onClick.AddListener(() =>
             {
                 if (_isPause)
@@ -35,13 +40,13 @@ namespace ShootEmUp
         {
             _text.gameObject.SetActive(true);
             _isPause = true;
-            _gameManager.PauseGame();
+            _gameManager.SetState(GameState.PAUSED);
         }
         private void ResumeGame()
         {
             _text.gameObject.SetActive(false);
             _isPause = false;
-            _gameManager.ResumeGame();
+            _gameManager.SetState(GameState.PLAYING);
         }
     }
 }

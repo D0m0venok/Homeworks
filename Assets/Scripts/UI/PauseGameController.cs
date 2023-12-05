@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
@@ -9,15 +9,12 @@ namespace ShootEmUp
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Text _text;
         
-        private GameManager _gameManager;
+        [Inject] private GameManager _gameManager;
 
         private bool _isPause;
         
-        [Inject]
-        private void Construct(GameManager gameManager)
+        public void OnStartGame()
         {
-            _gameManager = gameManager;
-            
             _pauseButton.onClick.AddListener(() =>
             {
                 if (_isPause)
@@ -26,9 +23,7 @@ namespace ShootEmUp
                     PauseGame();
             });
             _text.gameObject.SetActive(false);
-        }
-        public void OnStartGame()
-        {
+            
             gameObject.SetActive(true);
         }
         public void OnFinishGame()

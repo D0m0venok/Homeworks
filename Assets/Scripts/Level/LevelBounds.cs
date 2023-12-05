@@ -1,6 +1,5 @@
 using System.Linq;
 using UnityEngine;
-using Zenject;
 
 namespace ShootEmUp
 {
@@ -10,8 +9,7 @@ namespace ShootEmUp
         private float _maxX;
         private float _minY;
         private float _maxY;
-
-        [Inject]
+        
         public void Construct(Transform[] borders)
         {
             _minX = borders.Min(b => b.position.x);

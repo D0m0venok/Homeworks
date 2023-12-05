@@ -1,19 +1,13 @@
 using UnityEngine;
-using Zenject;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
     public sealed class EnemyPositions
     {
-        private Transform[] _spawnPositions;
-        private Transform[] _attackPositions;
+        [Inject] private Transform[] _spawnPositions;
+        [Inject] private Transform[] _attackPositions;
         
-        [Inject]
-        public void Construct(Transform[] spawnPositions, Transform[] attackPositions)
-        {
-            _spawnPositions = spawnPositions;
-            _attackPositions = attackPositions;
-        }
         public Transform RandomSpawnPosition()
         {
             return RandomTransform(_spawnPositions);

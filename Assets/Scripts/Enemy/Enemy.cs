@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Zenject;
 
 namespace ShootEmUp
 {
@@ -15,7 +14,6 @@ namespace ShootEmUp
         public EnemyMoveAgent MoveAgent => _moveAgent;
         public EnemyAttackAgent AttackAgent => _attackAgent;
         
-        [Inject]
         public void Construct(EnemySettings enemySettings)
         {
             _isPlayer = enemySettings.IsPlayer;

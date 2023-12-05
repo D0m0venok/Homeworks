@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
@@ -14,15 +14,12 @@ namespace ShootEmUp
         [SerializeField] private Text _text;
         [SerializeField] private int _timeToStart = 3;
         
-        private GameManager _gameManager;
+        [Inject] private GameManager _gameManager;
 
-        [Inject]
-        private void Construct(GameManager gameManager)
+        private void Awake()
         {
-            _gameManager = gameManager;
             _startButton.onClick.AddListener(StartGame);
         }
-
         private async void StartGame()
         {
             _startButton.gameObject.SetActive(false);

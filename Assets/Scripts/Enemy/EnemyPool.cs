@@ -1,15 +1,15 @@
 using System;
 using UnityEngine;
-using Zenject;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
     public sealed class EnemyPool : GameObjectsPool<Enemy>
     {
-        private readonly GameManager _gameManager;
+        [Inject] private readonly GameManager _gameManager;
         
-        public EnemyPool(GameManager gameManager, DiContainer diContainer, Settings settings, Transform container) : 
-            base(settings.EnemyPrefab, diContainer, container, settings.InitialCount, settings.MaxCount)
+        public EnemyPool(GameManager gameManager,  Settings settings, Transform container) : 
+            base(settings.EnemyPrefab, container, settings.InitialCount, settings.MaxCount)
         {
             _gameManager = gameManager;
         }
@@ -27,8 +27,7 @@ namespace ShootEmUp
         protected override Enemy Create()
         {
             var obj = base.Create();
-
-            _diContainer.Inject(obj);
+            
             obj.OnStartGame();
             return obj;
         }

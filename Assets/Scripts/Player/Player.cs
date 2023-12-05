@@ -1,11 +1,9 @@
 using System;
-using Zenject;
 
 namespace ShootEmUp
 {
     public sealed class Player : Unit
     {
-        [Inject]
         public void Construct(PlayerSettings playerSettings)
         {
             _isPlayer = playerSettings.IsPlayer;

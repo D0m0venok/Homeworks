@@ -1,14 +1,13 @@
 using UnityEngine;
-using Zenject;
+using VG.Utilites;
 
 
 namespace ShootEmUp
 {
     public sealed class FinishGameController : MonoBehaviour
     {
-        private GameManager _gameManager;
-
-        [Inject]
+        [Inject] private GameManager _gameManager;
+        
         private void Construct(GameManager gameManager)
         {
             _gameManager = gameManager;

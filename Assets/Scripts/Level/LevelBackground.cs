@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using Zenject;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
@@ -11,9 +11,9 @@ namespace ShootEmUp
         private float _movingSpeedY;
         private float _positionX;
         private float _positionZ;
-        private Transform _myTransform;
+        [Inject] private Transform _myTransform;
         
-        [Inject]
+        
         public void Construct(Transform transform, Params parameters)
         {
             _startPositionY = parameters.MStartPositionY;

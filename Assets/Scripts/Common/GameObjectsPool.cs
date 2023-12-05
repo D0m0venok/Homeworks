@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
 using Object = UnityEngine.Object;
 
 namespace ShootEmUp
@@ -13,19 +12,17 @@ namespace ShootEmUp
         private readonly Queue<T> _disabled = new();
         private readonly Transform _container;
         private readonly int _maxSize;
-        protected readonly DiContainer _diContainer;
 
         public int Count => _active.Count;
         public bool HasFreeObject => _active.Count < _maxSize;
 
-        protected GameObjectsPool(T prefab, DiContainer diContainer, Transform container, int initSize = 0, int maxSize = int.MaxValue)
+        protected GameObjectsPool(T prefab, Transform container = null, int initSize = 0, int maxSize = int.MaxValue)
         {
             if (prefab == null)
                 throw new NullReferenceException();
             
             _prefab = prefab;
             _container = container;
-            _diContainer = diContainer;
             
             _maxSize = Mathf.Clamp(maxSize, 1, int.MaxValue);
             initSize = Mathf.Clamp(initSize, 0, _maxSize);

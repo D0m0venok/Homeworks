@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Zenject;
 
 namespace ShootEmUp
 {
@@ -8,8 +7,8 @@ namespace ShootEmUp
     {
         private readonly GameManager _gameManager;
 
-        public BulletPool(GameManager gameManager, DiContainer diContainer, Settings settings, Transform container) : 
-            base(settings.BulletPrefab, diContainer, container, settings.InitialCount)
+        public BulletPool(GameManager gameManager, Settings settings, Transform container) : 
+            base(settings.BulletPrefab, container, settings.InitialCount)
         {
             _gameManager = gameManager;
         }

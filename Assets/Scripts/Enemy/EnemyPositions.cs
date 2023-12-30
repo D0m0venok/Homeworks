@@ -3,6 +3,7 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
+    [InjectTo]
     public sealed class EnemyPositions
     {
         [Inject] private Transform[] _spawnPositions;

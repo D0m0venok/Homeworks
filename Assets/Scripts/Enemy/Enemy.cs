@@ -1,39 +1,31 @@
 using System;
 using System.Collections.Generic;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class Enemy : Unit, IGameListenerProvider
+    [InstallMono(InstallType.PoolFactory, 7, 7)]
+    public sealed class Enemy : Unit
     {
+        [Inject] private EnemySettings _enemySettings;
         private float _positionInaccuracy;
         private float _shootDelay;
-        
-        private EnemyAttackAgent _attackAgent;
-        private EnemyMoveAgent _moveAgent;
 
-        public EnemyMoveAgent MoveAgent => _moveAgent;
-        public EnemyAttackAgent AttackAgent => _attackAgent;
-        
-        public void Construct(EnemySettings enemySettings)
+        public EnemyAttackAgent AttackAgent { get; private set; }
+        public EnemyMoveAgent MoveAgent { get; private set; }
+
+        public override void OnEntityAwake()
         {
-            _isPlayer = enemySettings.IsPlayer;
-            _speed = enemySettings.Speed;
-            _hitPoint = enemySettings.HitPoint;
-            _positionInaccuracy = enemySettings.PositionInaccuracy;
-            _shootDelay = enemySettings.ShootDelay;
-        }
-        public override void OnStartGame()
-        {
-            base.OnStartGame();
-            _moveAgent = new EnemyMoveAgent(this, _positionInaccuracy);
-            _attackAgent = new EnemyAttackAgent(this, _shootDelay);
-        }
-        
-        public IEnumerable<IGameListener> ProvideListeners()
-        {
-            yield return MoveAgent;
-            yield return AttackAgent;
-            yield return MoveComponent;
+            _isPlayer = _enemySettings.IsPlayer;
+            _speed = _enemySettings.Speed;
+            _hitPoint = _enemySettings.HitPoint;
+            _positionInaccuracy = _enemySettings.PositionInaccuracy;
+            _shootDelay = _enemySettings.ShootDelay;
+
+            MoveAgent = new EnemyMoveAgent(this, _positionInaccuracy);
+            AttackAgent = new EnemyAttackAgent(this, _shootDelay);
+            
+            base.OnEntityAwake();
         }
         
         [Serializable]

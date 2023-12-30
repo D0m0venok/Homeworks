@@ -13,7 +13,12 @@ namespace VG.Utilites
         {
             Name = name;
         }
+        public InjectLocalAttribute(bool onlyFromSelf)
+        {
+            OnlyFromSelf = onlyFromSelf;
+        }
         
         public string Name { get; }
+        public bool OnlyFromSelf { get; }
     }
 }

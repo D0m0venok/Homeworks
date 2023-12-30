@@ -1,70 +1,131 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 namespace VG.Utilites
 {
-    public static class DIContainer
+    public class DIContainer
     {
-        // public static void Install<T>(string id = null) where T : new()
-        // {
-        //     Install(new T(), id);
-        // }
-        // public static void Install(Type type, object obj, string id = null)
-        // {
-        //     _collection.Add(type, obj, id);
-        // }
-        // public static void Install<T>(T obj, string id = null)
-        // {
-        //     Install(typeof(T), obj, id);
-        // }
-        // public static void Install<T>(Func<T> creator, string id = null)
-        // {
-        //     Install(typeof(T), creator(), id);
-        // }
-        public static void Install(DICollection collection)
+        private readonly Dictionary<Type, object> _objects = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, Dictionary<string, object>> _variants = new Dictionary<Type, Dictionary<string, object>>();
+
+        public void Install(Type type, object obj, string id = null)
         {
-            _collection.Add(collection);
+            if (string.IsNullOrEmpty(id))
+            {
+                if (!_objects.TryAdd(type, obj))
+                    Debug.LogWarning($"DI collection already has a type {type}");
+                
+                return;
+            }
+
+            if (!_variants.ContainsKey(type))
+                _variants.Add(type, new Dictionary<string, object>());
+
+            var objects = _variants[type];
+            if (!objects.TryAdd(id, obj))
+                Debug.LogWarning($"DI collection already has a type {type} with id {id}");
         }
-        // public static bool IsInstalled(Type type, string id = null)
-        // {
-        //     return _collection.Contains(type, id);
-        // }
-        // public static bool IsInstalled<T>(string id = null)
-        // {
-        //     return IsInstalled(typeof(T));
-        // }
-        public static object Get(Type type, string id = null)
+        public void Install<T>(string id = null) where T: new()
         {
-            return _collection.Get(type, id);
+            Install(typeof(T), new T(), id);
         }
-        public static T Get<T>(string id = null)
+        public void Install<T>(T obj, string id = null)
+        {
+            Install(typeof(T), obj, id);
+        }
+        public void Install<T>(Func<T> creator, string id = null)
+        {
+            Install(typeof(T), creator(), id);
+        }
+        public void Install(DIContainer container)
+        {
+            foreach (var (type, obj) in container._objects)
+            {
+                Install(type, obj);
+            }
+            foreach (var (type, objects) in container._variants)
+            {
+                foreach (var (id, obj) in objects)
+                {
+                    Install(type, obj, id);
+                }
+            }
+        }
+        public void AddInstaller<T>() where T : Installer, new()
+        {
+            new T().Install(this);
+        }
+        public void AddInstaller(Installer installer)
+        {
+            installer.Install(this);
+        }
+        public object Get(Type type, string id = null)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                _objects.TryGetValue(type, out var o);
+                return o;
+            }
+
+            if(!_variants.TryGetValue(type, out var objects))
+                return null;
+
+            objects.TryGetValue(id, out var obj);
+            return obj;
+        }
+        public T Get<T>(string id = null)
         {
             return (T)Get(typeof(T), id);
         }
-        // public static void Remove(Type type, string id = null)
-        // {
-        //     _collection.Remove(type, id);
-        // }
-        // public static void Remove<T>(string id = null)
-        // {
-        //     Remove(typeof(T), id);
-        // }
-        public static void Remove(DICollection collection)
+        public void Remove(Type type, string id = null)
         {
-            _collection.Remove(collection);
+            if (string.IsNullOrEmpty(id))
+            {
+                _objects.Remove(type);
+                return;
+            }
+
+            if (_variants.TryGetValue(type, out var objects))
+                objects.Remove(id);
         }
-        public static void InjectTo(Type type, object obj)
+        public void Remove<T>(string id = null)
+        {
+            Remove(typeof(T), id);
+        }
+        public void Remove(DIContainer collection)
+        {
+            foreach (var (type, obj) in collection._objects)
+            {
+                Remove(type);
+            }
+            foreach (var (type, objects) in collection._variants)
+            {
+                foreach (var id in objects.Keys)
+                {
+                    Remove(type, id);
+                }
+            }
+        }
+        public bool Contains(Type type, string id = null)
+        {
+            if(string.IsNullOrEmpty(id))
+                return _objects.ContainsKey(type);
+            
+            return _variants.TryGetValue(type, out var objects) && objects.ContainsKey(id);
+        }
+        public void InjectTo(Type type, object obj)
         {
             InjectToObject(type, obj, null);
         }
-        public static void InjectTo<T>(T obj) where T : class
+        public void InjectTo<T>(T obj) where T : class
         {
             InjectTo(typeof(T), obj);
         }
 
-        private static void InjectToObject(Type type, object obj, MonoBehaviour targetMono)
+        private void InjectToObject(Type type, object obj, MonoBehaviour targetMono)
         {
             if (obj == null)
                 throw new NullReferenceException();
@@ -72,7 +133,7 @@ namespace VG.Utilites
             if(targetMono == null)
                 targetMono = obj as MonoBehaviour;
             
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (var field in GetFields(type))
             {
                 if (field.GetCustomAttribute<InjectToAttribute>() != null)
                 {
@@ -83,7 +144,7 @@ namespace VG.Utilites
                 var injectAttr = field.GetCustomAttribute<InjectAttribute>();
                 if (injectAttr != null)
                 {
-                    InjectToField(field, obj, Get(field.FieldType, injectAttr.Id), Color.yellow);
+                    InjectToField(field, obj, Get(field.FieldType, injectAttr.Id));
                     continue;
                 }
 
@@ -91,17 +152,31 @@ namespace VG.Utilites
                 if(attr == null || targetMono == null)
                     continue;
                 
-                var comps = targetMono.GetComponentsInChildren(field.FieldType, true);
                 Component inject;
-                if (!string.IsNullOrEmpty(attr.Name))
-                    inject = comps.FirstOrDefault(c => c.name.Equals(attr.Name));
+                if (attr.OnlyFromSelf)
+                {
+                    inject = targetMono.GetComponent(field.FieldType);
+                }
                 else
-                    inject = comps.Length == 1 ? comps.First() : comps.FirstOrDefault(c => Compare(c.name, field.Name));
+                {
+                    var comps = targetMono.GetComponentsInChildren(field.FieldType, true);
+                    
+                    if (!string.IsNullOrEmpty(attr.Name))
+                        inject = comps.FirstOrDefault(c => c.name.Equals(attr.Name));
+                    else
+                        inject = comps.Length == 1 ? comps.First() : comps.FirstOrDefault(c => Compare(c.name, field.Name));
+                }
                 
-                InjectToField(field, obj, inject, Color.cyan);
+                InjectToField(field, obj, inject);
             }
         }
-        private static void InjectToField(FieldInfo field, object obj, object value, Color color)
+        
+        private static IEnumerable<FieldInfo> GetFields(Type type)
+        {
+            return type == null ? Enumerable.Empty<FieldInfo>() : type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Union(GetFields(type.BaseType));
+        }
+        private static void InjectToField(FieldInfo field, object obj, object value)
         {
             if (value == null)
             {
@@ -141,9 +216,7 @@ namespace VG.Utilites
                 i2++;
             }
 
-            return true;
+            return i1 == string1.Length && i2 == string2.Length;
         }
-        
-        private static readonly DICollection _collection = new DICollection();
     }
 }

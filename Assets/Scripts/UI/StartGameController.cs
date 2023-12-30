@@ -6,6 +6,7 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
+    [InjectTo]
     public sealed class StartGameController : MonoBehaviour
     {
         private const int DELAY_SECONDS = 1;
@@ -13,7 +14,6 @@ namespace ShootEmUp
         [SerializeField] private Button _startButton;
         [SerializeField] private Text _text;
         [SerializeField] private int _timeToStart = 3;
-        
         [Inject] private GameManager _gameManager;
 
         private void Awake()

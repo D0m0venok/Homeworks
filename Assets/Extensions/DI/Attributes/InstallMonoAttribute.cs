@@ -7,7 +7,6 @@ namespace VG.Utilites
         Instance,
         Factory,
         PoolFactory,
-        SortedPoolFactory
     }
 
     [AttributeUsage(AttributeTargets.Class)]
@@ -17,21 +16,16 @@ namespace VG.Utilites
         {
             
         }
-        public InstallMonoAttribute(string id)
-        {
-            Id = id;
-        }
-        public InstallMonoAttribute(InstallType type)
+        public InstallMonoAttribute(InstallType type, int poolInitSize = 0, int poolMaxSize = int.MaxValue)
         {
             Type = type;
-        }
-        public InstallMonoAttribute(InstallType type, string id)
-        {
-            Id = id;
-            Type = type;
+            PoolInitSize = poolInitSize;
+            PoolMaxSize = poolMaxSize;
         }
         
-        public string Id { get; private set; }
-        public InstallType Type { get; private set; }
+        public bool IdFromName;
+        public InstallType Type { get; }
+        public int PoolInitSize { get; }
+        public int PoolMaxSize { get; }
     }
 }

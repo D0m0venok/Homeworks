@@ -1,51 +1,39 @@
-using System.Collections.Generic;
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    [RequireComponent(typeof(CircleCollider2D))]
-    public sealed class Bullet : MonoBehaviour, 
-        IGameStartListener, IGameFixedUpdateListener, 
-        IGameDetachListener, IGameListenerProvider
+    [InstallMono(InstallType.PoolFactory, 20)]
+    [RequireComponent(typeof(Collider2D))]
+    public sealed class Bullet : Entity, IAwake,
+        IFixedUpdate, ICollisionEnter2D
     {
-        [SerializeField] private SpriteRenderer _spriteRenderer;
-        [SerializeField] private Rigidbody2D _rigidbody2D;
+        [InjectLocal] private SpriteRenderer _spriteRenderer;
+        [InjectLocal] private Rigidbody2D _rigidbody2D;
+        [Inject] private LevelBounds _levelBounds;
+        [Inject] private PoolFactory<Bullet> _pool;
 
         private int _damage;
         private bool _isPlayer;
-        private BulletPool _pool;
-        private LevelBounds _levelBounds;
-        private RigidbodyStateController _rigidbodyStateController;
-        
-        public void OnStartGame()
+        private readonly RigidbodyStateController _rigidbodyStateController = new ();
+
+        void IAwake.OnEntityAwake()
         {
-            _rigidbodyStateController = new RigidbodyStateController(_rigidbody2D);
+            _rigidbodyStateController.Init(_rigidbody2D);
         }
-        private void OnCollisionEnter2D(Collision2D collision)
+        void ICollisionEnter2D.OnEntityCollisionEnter2D(Collision2D other)
         {
             _pool?.Put(this);
-            DealDamage(collision.gameObject);
+            DealDamage(other.gameObject);
         }
-        
-        public void OnFixedUpdate(float fixedDeltaTime)
+        void IFixedUpdate.OnEntityFixedUpdate()
         {
             if(!_levelBounds.InBounds(transform.position))
                 _pool?.Put(this);
         }
-        public void Detach()
+
+        public void SetBullet(Args args)
         {
-            _pool = null;
-        }
-        public IEnumerable<IGameListener> ProvideListeners()
-        {
-            yield return _rigidbodyStateController;
-            yield return this;
-        }
-        public void SetBullet(BulletPool pool, LevelBounds levelBounds, Args args)
-        {
-            _pool = pool;
-            _levelBounds = levelBounds;
-            
             transform.position = args.Position;
             _rigidbody2D.velocity = args.Velocity;
             gameObject.layer = args.PhysicsLayer;

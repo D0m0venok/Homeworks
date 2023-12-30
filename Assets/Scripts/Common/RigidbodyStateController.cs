@@ -1,14 +1,15 @@
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public class RigidbodyStateController : IGameFinishListener, 
-        IGamePauseListener, IGameResumeListener
+    public class RigidbodyStateController : EntityComponent,
+        IGameFinishListener, IGamePauseListener, IGameResumeListener
     {
-        protected readonly Rigidbody2D _rigidbody2D;
+        protected Rigidbody2D _rigidbody2D;
         private Vector2 _cacheVelocity;
 
-        public RigidbodyStateController(Rigidbody2D rigidbody2D)
+        public void Init(Rigidbody2D rigidbody2D)
         {
             _rigidbody2D = rigidbody2D;
         }

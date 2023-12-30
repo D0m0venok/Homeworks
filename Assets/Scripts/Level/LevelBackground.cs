@@ -4,28 +4,32 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class LevelBackground : IGameFixedUpdateListener
+    public sealed class LevelBackground : IFixedUpdate
     {
-        private float _startPositionY;
-        private float _endPositionY;
-        private float _movingSpeedY;
-        private float _positionX;
-        private float _positionZ;
         [Inject] private Transform _myTransform;
-        
-        
-        public void Construct(Transform transform, Params parameters)
+        [Inject] private Params _params;
+        private readonly float _startPositionY;
+        private readonly float _endPositionY;
+        private readonly float _movingSpeedY;
+        private readonly float _positionX;
+        private readonly float _positionZ;
+
+        public LevelBackground()
         {
-            _startPositionY = parameters.MStartPositionY;
-            _endPositionY = parameters.MEndPositionY;
-            _movingSpeedY = parameters.MMovingSpeedY;
-            _myTransform = transform;
+            ListenersManager.Add(this);
+            
+            DI.Container.InjectTo(this);
+            
             var position = _myTransform.position;
             _positionX = position.x;
             _positionZ = position.z;
+            
+            _startPositionY = _params.StartPositionY;
+            _endPositionY = _params.EndPositionY;
+            _movingSpeedY = _params.MovingSpeedY;
         }
 
-        public void OnFixedUpdate(float fixedDeltaTime)
+        void IFixedUpdate.OnEntityFixedUpdate()
         {
             if (_myTransform.position.y <= _endPositionY)
             {
@@ -38,7 +42,7 @@ namespace ShootEmUp
 
             _myTransform.position -= new Vector3(
                 _positionX,
-                _movingSpeedY * fixedDeltaTime,
+                _movingSpeedY * Time.fixedDeltaTime,
                 _positionZ
             );
         }
@@ -50,9 +54,9 @@ namespace ShootEmUp
             [SerializeField] private float _endPositionY;
             [SerializeField] private float _movingSpeedY;
             
-            public float MStartPositionY => _startPositionY;
-            public float MEndPositionY => _endPositionY;
-            public float MMovingSpeedY => _movingSpeedY;
+            public float StartPositionY => _startPositionY;
+            public float EndPositionY => _endPositionY;
+            public float MovingSpeedY => _movingSpeedY;
         }
     }
 }

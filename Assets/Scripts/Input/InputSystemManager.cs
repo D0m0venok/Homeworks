@@ -1,21 +1,24 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class InputSystemManager : IMoveInput, IFireInput, 
-        IGameStartListener, 
-        IGameFinishListener,
-        IGamePauseListener,
-        IGameResumeListener,
-        IGameFixedUpdateListener
+    public sealed class InputSystemManager : 
+        IMoveInput, IFireInput, IFixedUpdate,
+        IGameStartListener, IGameFinishListener,
+        IGamePauseListener, IGameResumeListener
     {
         public event Action OnFired = delegate {};
         public event Action<Vector2> OnMoved = delegate {};
 
         private Controls _controls;
-        
+
+        public InputSystemManager()
+        {
+            ListenersManager.Add(this);
+        }
         public void OnStartGame()
         {
             _controls = new Controls();
@@ -38,10 +41,10 @@ namespace ShootEmUp
         {
             _controls.Enable();
         }
-        public void OnFixedUpdate(float fixedDeltaTime)
+        void IFixedUpdate.OnEntityFixedUpdate()
         {
             var moveInput = _controls.Main.Move.ReadValue<float>();
-            OnMoved(new Vector2(moveInput, 0) * fixedDeltaTime);
+            OnMoved(new Vector2(moveInput, 0) * Time.fixedDeltaTime);
         }
 
         private Action<InputAction.CallbackContext> SubscribeFire()

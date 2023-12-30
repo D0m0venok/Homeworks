@@ -1,23 +1,15 @@
-using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
+    [InjectTo]
     public sealed class BulletSystem
     {
-        private readonly BulletPool _pool;
-        private readonly LevelBounds _levelBounds;
-        private readonly Transform _worldTransform;
-
-        public BulletSystem(BulletPool pool, LevelBounds levelBounds, Transform worldTransform)
-        {
-            _pool = pool;
-            _levelBounds = levelBounds;
-            _worldTransform = worldTransform;
-        }
+        [Inject] private readonly PoolFactory<Bullet> _pool;
         
         public void FlyBulletByArgs(Args args)
         {
-            _pool.Get(_worldTransform).SetBullet(_pool, _levelBounds, args);
+            _pool.Get().SetBullet(args);
         }
     }
 }

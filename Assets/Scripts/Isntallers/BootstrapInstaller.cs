@@ -6,8 +6,8 @@ namespace ShootEmUp
     {
         [SerializeField] private GameManager _gameManager;
         [SerializeField] private Player _player;
-        [SerializeField] private Transform _levelBackgrount;
-        [SerializeField] private LevelBackground.Params _levelBackgrountParametrs;
+        [SerializeField] private Transform _levelBackground;
+        [SerializeField] private LevelBackground.Params _levelBackgroundParameters;
         [SerializeField] private Transform[] _levelBounds;
 
         public void InstallBindings()
@@ -16,7 +16,7 @@ namespace ShootEmUp
             // Container.Bind<Player>().FromInstance(_player).AsSingle();
             // Container.BindInterfacesAndSelfTo<PlayerController>().AsSingle();
             // Container.BindInterfacesTo<InputSystemManager>().AsSingle();
-            // Container.BindInterfacesTo<LevelBackground>().AsSingle().WithArguments(_levelBackgrount, _levelBackgrountParametrs);
+            // Container.BindInterfacesTo<LevelBackground>().AsSingle().WithArguments(_levelBackground, _levelBackgroundParameters);
             // Container.Bind<LevelBounds>().AsSingle().WithArguments(_levelBounds);
         }
     }

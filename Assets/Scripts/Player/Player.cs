@@ -1,16 +1,22 @@
 using System;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
+    [InjectTo]
     public sealed class Player : Unit
     {
-        public void Construct(PlayerSettings playerSettings)
+        [Inject] private PlayerSettings _playerSettings;
+
+        public override void OnEntityAwake()
         {
-            _isPlayer = playerSettings.IsPlayer;
-            _speed = playerSettings.Speed;
-            _hitPoint = playerSettings.HitPoint;
+            _isPlayer = _playerSettings.IsPlayer;
+            _speed = _playerSettings.Speed;
+            _hitPoint = _playerSettings.HitPoint;
+            
+            base.OnEntityAwake();
         }
-        
+
         [Serializable]
         public class PlayerSettings : UnitSettings
         {

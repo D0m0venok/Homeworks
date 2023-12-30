@@ -29,28 +29,28 @@ namespace VG.Utilites
 
             InstallSceneObjects();
 
-            if (_resourcesPaths.Length == 0)
-                return;
-
-            foreach (var path in _resourcesPaths.Distinct())
+            if (_resourcesPaths.Length > 0)
             {
-                InstallPrefabs(path);
-                InstallScriptables(path);
-            }
-            
-            Resources.UnloadUnusedAssets();
+                foreach (var path in _resourcesPaths.Distinct())
+                {
+                    InstallPrefabs(path);
+                    InstallScriptables(path);
+                }
 
-            DIContainer.Install(_collection);
+                Resources.UnloadUnusedAssets();
+            }
+
+            DI.Container.Install(_container);
             
             foreach (var (type, monoBehaviour) in _injects)
             {
-                DIContainer.InjectTo(type, monoBehaviour);
+                DI.Container.InjectTo(type, monoBehaviour);
             }
             _injects.Clear();
         }
         private void OnDestroy()
         {
-            DIContainer.Remove(_collection);
+            DI.Container.Remove(_container);
         }
 
 #if UNITY_EDITOR
@@ -70,7 +70,7 @@ namespace VG.Utilites
         
         private void Install(Type type, object obj, string id)
         {
-            _collection.Add(type, obj, id);
+            _container.Install(type, obj, id);
         }
         private void InstallMono(Type type, Object obj)
         {
@@ -87,19 +87,20 @@ namespace VG.Utilites
             if(attr == null)
                 return;
 
+            var nameId = attr.IdFromName ? obj.name : null; 
+            
             switch (attr.Type)
             {
                 case InstallType.Instance:
-                    Install(type, obj, attr.Id);
+                    Install(type, obj, nameId);
                     break;
                 case InstallType.Factory:
                     var factoryType = typeof(Factory<>).MakeGenericType(type);
-                    Install(factoryType, factoryType.GetConstructor(new []{type})?.Invoke(new object[]{obj}), attr.Id);
+                    Install(factoryType, factoryType.GetConstructor(new []{type})?.Invoke(new object[]{obj}), nameId);
                     break;
                 case InstallType.PoolFactory:
                     var poolFactoryType = typeof(PoolFactory<>).MakeGenericType(type);
-                    Install(poolFactoryType, poolFactoryType.GetConstructor(new []{type})?.Invoke(new object[]{obj}), attr.Id);
-                    break;
+                    Install(poolFactoryType, poolFactoryType.GetConstructor(new []{type, typeof(int), typeof(int)})?.Invoke(new object[]{obj, attr.PoolInitSize, attr.PoolMaxSize}), nameId);
                     break;
             }
         }
@@ -111,8 +112,8 @@ namespace VG.Utilites
 
                 InstallMono(type, o);
 
-                if (o is IInstaller installer)
-                    _collection.Add(installer.Process());
+                if (o is MonoInstaller installer)
+                    installer.Install(_container);
 
                 if(type.GetCustomAttribute<InjectToAttribute>() != null)
                     _injects.Add(new Tuple<Type, MonoBehaviour>(type, o));
@@ -136,7 +137,7 @@ namespace VG.Utilites
             }
         }
 
-        private readonly DICollection _collection = new DICollection();
+        private readonly DIContainer _container = new DIContainer();
         private readonly List<Tuple<Type, MonoBehaviour>> _injects = new List<Tuple<Type, MonoBehaviour>>();
     }
 }

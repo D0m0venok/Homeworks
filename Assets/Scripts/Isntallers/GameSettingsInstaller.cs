@@ -5,8 +5,8 @@ namespace ShootEmUp
     //[CreateAssetMenu(menuName = "Game Settings")]
     public class GameSettingsInstaller
     {
-        [SerializeField] private EnemyPool.Settings _enemiesPool;
-        [SerializeField] private BulletPool.Settings _bulletsPool;
+        //[SerializeField] private EnemyPool.Settings _enemiesPool;
+        //[SerializeField] private BulletPool.Settings _bulletsPool;
         [SerializeField] private EnemyManager.Settings _enemyManager;
         [SerializeField] private PlayerController.Settings _playerController;
         [SerializeField] private Player.PlayerSettings _playerSettings;

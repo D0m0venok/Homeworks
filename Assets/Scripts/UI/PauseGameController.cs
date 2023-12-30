@@ -4,11 +4,11 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class PauseGameController : MonoBehaviour, IGameStartListener, IGameFinishListener
+    [InjectTo]
+    public sealed class PauseGameController : Entity, IGameStartListener, IGameFinishListener
     {
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Text _text;
-        
         [Inject] private GameManager _gameManager;
 
         private bool _isPause;

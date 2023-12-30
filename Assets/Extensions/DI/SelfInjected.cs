@@ -4,7 +4,7 @@
     {
         protected SelfInjected()
         {
-            DIContainer.InjectTo(GetType(), this);
+            DI.Container.InjectTo(GetType(), this);
         }
     }
 }

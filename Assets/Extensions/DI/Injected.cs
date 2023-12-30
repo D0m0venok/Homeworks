@@ -12,7 +12,7 @@
                 if (!_inited)
                 {
                     _inited = true;
-                    _value = DIContainer.Get<T>();
+                    _value = DI.Container.Get<T>();
                 }
                 return _value;
             }

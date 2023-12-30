@@ -6,7 +6,7 @@ namespace VG.Utilites
     {
         protected virtual void Awake()
         {
-            DIContainer.InjectTo(GetType(), this);
+            DI.Container.InjectTo(GetType(), this);
         }
     }
 }

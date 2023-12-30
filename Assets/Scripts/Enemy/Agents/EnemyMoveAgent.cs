@@ -1,8 +1,9 @@
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyMoveAgent : IGameFixedUpdateListener
+    public sealed class EnemyMoveAgent : EntityComponent, IFixedUpdate
     {
         private readonly float _positionInaccuracy;
         private readonly Enemy _enemy;
@@ -15,8 +16,8 @@ namespace ShootEmUp
         }
         
         public bool IsReached { get; private set; }
-
-        public void OnFixedUpdate(float fixedDeltaTime)
+        
+        void IFixedUpdate.OnEntityFixedUpdate()
         {
             if (IsReached)
                 return;
@@ -28,7 +29,7 @@ namespace ShootEmUp
                 return;
             }
             
-            var direction = vector.normalized * fixedDeltaTime;
+            var direction = vector.normalized * Time.fixedDeltaTime;
             _enemy.MoveComponent.MoveByRigidbodyVelocity(direction);
         }
         public void SetDestination(Vector2 endPoint)

@@ -1,34 +1,23 @@
 using System;
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
+    [InjectTo]
     public sealed class EnemyManager
     {
-        private readonly BulletSystem _bulletSystem;
-        private readonly BulletSettings _bulletSettings;
-        private readonly Player _player;
-        private readonly EnemyPositions _enemyPositions;
-        private readonly EnemyPool _pool;
-        private readonly Transform _worldTransform;
-        
-        public EnemyManager(BulletSystem bulletSystem, Settings settings, Player player, 
-            EnemyPool pool, EnemyPositions enemyPositions, Transform worldTransform)
-        {
-            _bulletSystem = bulletSystem;
-            _bulletSettings = settings.BulletSettings;
-            _player = player;
-            _enemyPositions = enemyPositions;
-            _pool = pool;
-            _worldTransform = worldTransform;
-        }
+        [Inject] private readonly PoolFactory<Enemy> _pool;
+        [Inject] private readonly BulletSystem _bulletSystem;
+        [Inject] private readonly Settings _settings;
+        [Inject] private readonly Player _player;
+        [Inject] private readonly EnemyPositions _enemyPositions;
         
         public bool TrySpawnEnemy()
         {
-            if(!_pool.HasFreeObject)
+            if(!_pool.TryGet(out var enemy))
                 return false;
             
-            var enemy = _pool.Get(_worldTransform);
             var spawnPosition = _enemyPositions.RandomSpawnPosition();
             enemy.transform.position = spawnPosition.position;
                     
@@ -54,8 +43,9 @@ namespace ShootEmUp
         }
         private void OnFired(Vector2 position, Vector2 direction)
         {
+            var bulletSettings = _settings.BulletSettings;
             _bulletSystem.FlyBulletByArgs(new Args
-                (position, direction * _bulletSettings.Speed, _bulletSettings.Color, _bulletSettings.PhysicsLayer, _bulletSettings.Damage, false));
+                (position, direction * bulletSettings.Speed, bulletSettings.Color, bulletSettings.PhysicsLayer, bulletSettings.Damage, false));
         }
         
         [Serializable]

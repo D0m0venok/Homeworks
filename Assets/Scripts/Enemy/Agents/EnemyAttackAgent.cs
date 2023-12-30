@@ -1,9 +1,10 @@
 using System;
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyAttackAgent : IGameFixedUpdateListener
+    public sealed class EnemyAttackAgent : EntityComponent, IFixedUpdate
     {
         private readonly WeaponComponent _weaponComponent;
         private readonly EnemyMoveAgent _moveAgent;
@@ -19,7 +20,7 @@ namespace ShootEmUp
             _moveAgent = enemy.MoveAgent;
             _shootDelay = shootDelay;
         }
-        public void OnFixedUpdate(float fixedDeltaTime)
+        void IFixedUpdate.OnEntityFixedUpdate()
         {
             if (!_moveAgent.IsReached)
                 return;
@@ -27,7 +28,7 @@ namespace ShootEmUp
             if (!_target.HitPointsComponent.IsHitPointsExists())
                 return;
 
-            _currentTime -= fixedDeltaTime;
+            _currentTime -= Time.fixedDeltaTime;
             if (_currentTime <= 0)
             {
                 Fire();

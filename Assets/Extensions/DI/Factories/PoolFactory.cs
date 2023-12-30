@@ -1,15 +1,12 @@
 ﻿using System.Reflection;
-using ShootEmUp;
+using Extensions;
 using UnityEngine;
 
 namespace VG.Utilites
 {
-    public class PoolFactory<T> : GameObjectsPool<T> where T : Component, IGameStartListener
+    public class PoolFactory<T> : GameObjectsPool<T> where T : Component
     {
-        public PoolFactory(T prefab) : base(prefab)
-        {
-            
-        }
+        public PoolFactory(T prefab, int initSize = 0, int maxSize = int.MaxValue) : base(prefab, initSize, maxSize){}
 
         protected override T Create()
         {
@@ -17,7 +14,7 @@ namespace VG.Utilites
             
             var type = typeof(T);
             if(type.GetCustomAttribute<InjectToAttribute>() != null)
-                DIContainer.InjectTo(type, instance);
+                DI.Container.InjectTo(type, instance);
 
             return instance;
         }

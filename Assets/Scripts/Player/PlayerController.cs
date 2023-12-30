@@ -4,6 +4,7 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
+    [InjectTo]
     public sealed class PlayerController : IGameStartListener, IGameFinishListener
     {
         [Inject] private readonly Player _player;
@@ -12,7 +13,11 @@ namespace ShootEmUp
         [Inject] private readonly FinishGameController _finishGameController;
         [Inject] private readonly BulletSystem _bulletSystem;
         [Inject] private readonly Settings _settings;
-        
+
+        public PlayerController()
+        {
+            ListenersManager.Add(this);
+        }
         // public PlayerController(Player player, IMoveInput moveInput, IFireInput fireInput, 
         //     FinishGameController finishGameController, BulletSystem bulletSystem, Settings settings)
         // {

@@ -4,14 +4,10 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
+    [InjectTo]
     public sealed class FinishGameController : MonoBehaviour
     {
         [Inject] private GameManager _gameManager;
-        
-        private void Construct(GameManager gameManager)
-        {
-            _gameManager = gameManager;
-        }
         
         public void FinishGame()
         {

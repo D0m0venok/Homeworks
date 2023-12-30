@@ -17,7 +17,7 @@ namespace VG.Utilites
             
             var type = typeof(T);
             if(type.GetCustomAttribute<InjectToAttribute>() != null)
-                DIContainer.InjectTo(type, instance);
+                DI.Container.InjectTo(type, instance);
 
             return instance;
         }

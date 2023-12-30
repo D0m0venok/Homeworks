@@ -1,18 +1,21 @@
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyPeriodSpawner : IGameUpdateListener
+    [InjectTo]
+    public sealed class EnemyPeriodSpawner : IUpdate
     {
+        [Inject] private readonly EnemyManager _enemyManager;
         private readonly float _delayBetweenSpawnsTime = 1f;
-        private readonly EnemyManager _enemyManager;
         private float _lastSpawnTime;
-        
-        public EnemyPeriodSpawner(EnemyManager enemyManager)
+
+        public EnemyPeriodSpawner()
         {
-            _enemyManager = enemyManager;
+            ListenersManager.Add(this);
         }
-        public void OnUpdate(float deltaTime)
+        
+        void IUpdate.OnEntityUpdate()
         {
             if (Time.realtimeSinceStartup - _lastSpawnTime <= _delayBetweenSpawnsTime) 
                 return;

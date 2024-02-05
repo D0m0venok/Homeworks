@@ -14,123 +14,18 @@ namespace ShootEmUp
         FINISHED = 3
     }
 
+    [InstallMono]
     public sealed class GameManager : MonoBehaviour
     {
         private GameState _state;
-        //private readonly HashSet<IGameListener> _cacheListeners = new();
-        //private readonly Listeners<IGameListener> _listeners = new();
 
         public GameState State => _state;
 
-        // private void Update()
-        // {
-        //     if (!IsPlaying())
-        //         return;
-        //
-        //     var deltaTime = Time.deltaTime;
-        //     _listeners.CacheForEach<IGameUpdateListener>(listener => listener.OnUpdate(deltaTime));
-        // }
-        // private void FixedUpdate()
-        // {
-        //     if (!IsPlaying())
-        //         return;
-        //
-        //     var deltaTime = Time.fixedDeltaTime;
-        //
-        //     _listeners.CacheForEach<IGameFixedUpdateListener>(listener => listener.OnFixedUpdate(deltaTime));
-        // }
-        // private void LateUpdate()
-        // {
-        //     if (!IsPlaying())
-        //         return;
-        //
-        //     var deltaTime = Time.deltaTime;
-        //
-        //     _listeners.CacheForEach<IGameLateUpdateListener>(listener => listener.OnLateUpdate(deltaTime));
-        // }
+        private void Awake()
+        {
+            ListenersManager.IsUpdatesEnabled = false;
+        }
 
-        // public void AddListeners(IEnumerable<IGameListener> gameListeners)
-        // {
-        //     if (gameListeners == null)
-        //         return;
-        //
-        //     foreach (var listener in gameListeners)
-        //     {
-        //         AddListener(listener);
-        //     }
-        // }
-        // public void RemoveListeners(IEnumerable<IGameListener> gameListeners)
-        // {
-        //     if (gameListeners == null)
-        //         return;
-        //
-        //     foreach (var listener in gameListeners)
-        //     {
-        //         RemoveListener(listener);
-        //     }
-        // }
-        // public void AddListener(IGameListener listener)
-        // {
-        //     if (listener == null)
-        //         return;
-        //
-        //     if (_cacheListeners.Contains(listener))
-        //         throw new Exception($"Key {listener} has already been added");
-        //
-        //     _cacheListeners.Add(listener);
-        //
-        //     if (listener is IGameAttachListener attachElement)
-        //         attachElement.Attach();
-        //
-        //     if (listener is IGameStartListener startListener)
-        //         _listeners.Add(startListener);
-        //
-        //     if (listener is IGameFinishListener finishListener)
-        //         _listeners.Add(finishListener);
-        //
-        //     if (listener is IGamePauseListener pauseListener)
-        //         _listeners.Add(pauseListener);
-        //
-        //     if (listener is IGameResumeListener resumeListener)
-        //         _listeners.Add(resumeListener);
-        //
-        //     if (listener is IGameUpdateListener updateListener)
-        //         _listeners.Add(updateListener);
-        //
-        //     if (listener is IGameFixedUpdateListener fixedUpdateListener)
-        //         _listeners.Add(fixedUpdateListener);
-        //
-        //     if (listener is IGameLateUpdateListener lateUpdateListener)
-        //         _listeners.Add(lateUpdateListener);
-        // }
-        // public void RemoveListener(IGameListener listener)
-        // {
-        //     if (listener == null || !_cacheListeners.Contains(listener))
-        //         return;
-        //
-        //     _cacheListeners.Remove(listener);
-        //
-        //     if (listener is IGameDetachListener attachElement)
-        //         attachElement.Detach();
-        //
-        //     if (listener is IGameStartListener startListener)
-        //         _listeners.Remove(startListener);
-        //
-        //     if (listener is IGameFinishListener finishListener)
-        //         _listeners.Remove(finishListener);
-        //
-        //     if (listener is IGamePauseListener pauseListener)
-        //         _listeners.Remove(pauseListener);
-        //
-        //     if (listener is IGameResumeListener resumeListener)
-        //         _listeners.Remove(resumeListener);
-        //
-        //     if (listener is IGameUpdateListener updateListener)
-        //         _listeners.Remove(updateListener);
-        //
-        //     if (listener is IGameFixedUpdateListener fixedUpdateListener)
-        //         _listeners.Remove(fixedUpdateListener);
-        // }
         public void SetState(GameState state)
         {
             if (_state == state)
@@ -151,14 +46,14 @@ namespace ShootEmUp
                     //     _listeners.CacheForEach<IGameStartListener>(listener => listener.OnStartGame());
                     break;
                 case GameState.PAUSED:
-                    ListenersManager.Invoke<IGamePauseListener>(listener => listener.OnPauseGame());
                     ListenersManager.IsUpdatesEnabled = false;
+                    ListenersManager.Invoke<IGamePauseListener>(listener => listener.OnPauseGame());
                     // _listeners.CacheForEach<IGamePauseListener>(listener => listener.OnPauseGame());
                     // _listeners.IsEnable = false;
                     break;
                 case GameState.FINISHED:
-                    ListenersManager.Invoke<IGameFinishListener>(listener => listener.OnFinishGame());
                     ListenersManager.IsUpdatesEnabled = false;
+                    ListenersManager.Invoke<IGameFinishListener>(listener => listener.OnFinishGame());
                     // _listeners.CacheForEach<IGameFinishListener>(listener => listener.OnFinishGame());
                     // _listeners.IsEnable = false;
                     break;

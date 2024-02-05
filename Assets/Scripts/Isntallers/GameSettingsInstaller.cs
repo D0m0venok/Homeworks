@@ -1,25 +1,22 @@
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
     //[CreateAssetMenu(menuName = "Game Settings")]
-    public class GameSettingsInstaller
+    public class GameSettingsInstaller : ScriptableInstaller
     {
-        //[SerializeField] private EnemyPool.Settings _enemiesPool;
-        //[SerializeField] private BulletPool.Settings _bulletsPool;
         [SerializeField] private EnemyManager.Settings _enemyManager;
         [SerializeField] private PlayerController.Settings _playerController;
         [SerializeField] private Player.PlayerSettings _playerSettings;
         [SerializeField] private Enemy.EnemySettings _enemySettings;
-
-        public  void InstallBindings()
+        
+        public override void Install(DIContainer container)
         {
-            // Container.BindInstance(_enemiesPool);
-            // Container.BindInstance(_bulletsPool);
-            // Container.BindInstance(_enemyManager);
-            // Container.BindInstance(_playerController);
-            // Container.BindInstance(_playerSettings);
-            // Container.BindInstance(_enemySettings);
+            container.Install(_enemyManager);
+            container.Install(_playerController);
+            container.Install(_playerSettings);
+            container.Install(_enemySettings);
         }
     }
 }

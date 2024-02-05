@@ -36,12 +36,14 @@ namespace VG.Utilites
         {
             Install(typeof(T), obj, id);
         }
-        public void Install<T>(Func<T> creator, string id = null)
-        {
-            Install(typeof(T), creator(), id);
-        }
         public void Install(DIContainer container)
         {
+            if (container == this)
+            {
+                Debug.LogWarning($"Can't add self");
+                return;
+            }
+
             foreach (var (type, obj) in container._objects)
             {
                 Install(type, obj);
@@ -56,7 +58,7 @@ namespace VG.Utilites
         }
         public void AddInstaller<T>() where T : Installer, new()
         {
-            new T().Install(this);
+            AddInstaller(new T());
         }
         public void AddInstaller(Installer installer)
         {
@@ -95,13 +97,19 @@ namespace VG.Utilites
         {
             Remove(typeof(T), id);
         }
-        public void Remove(DIContainer collection)
+        public void Remove(DIContainer container)
         {
-            foreach (var (type, obj) in collection._objects)
+            if (container == this)
+            {
+                Debug.LogWarning($"Can't add self");
+                return;
+            }
+            
+            foreach (var (type, obj) in container._objects)
             {
                 Remove(type);
             }
-            foreach (var (type, objects) in collection._variants)
+            foreach (var (type, objects) in container._variants)
             {
                 foreach (var id in objects.Keys)
                 {
@@ -122,14 +130,26 @@ namespace VG.Utilites
         }
         public void InjectTo<T>(T obj) where T : class
         {
-            InjectTo(typeof(T), obj);
+            InjectToObject(typeof(T), obj, null);
+        }
+        public IEnumerable<TypeObject> GetObjects()
+        {
+            var objects = _objects.Select(o => new TypeObject(o.Key, o.Value));
+            var variants = _variants.SelectMany(v => v.Value.Select(o => new TypeObject(v.Key, o.Value)));
+            return objects.Concat(variants);
         }
 
         private void InjectToObject(Type type, object obj, MonoBehaviour targetMono)
         {
             if (obj == null)
-                throw new NullReferenceException();
-            
+            {
+                Debug.LogWarning($"Can't inject to {type}, object is null");
+                return;
+            }
+
+            if (type.GetCustomAttribute<InjectToAttribute>() == null)
+                return;
+
             if(targetMono == null)
                 targetMono = obj as MonoBehaviour;
             
@@ -169,6 +189,31 @@ namespace VG.Utilites
                 
                 InjectToField(field, obj, inject);
             }
+
+            foreach (var method in GetMethods(type))
+            {
+                var injectAttr = method.GetCustomAttribute<InjectAttribute>();
+                if (injectAttr == null)
+                    continue;
+                
+                var parameters = method.GetParameters();
+                var injects = new object[parameters.Length];
+                for (var i = 0; i < parameters.Length; i++)
+                {
+                    var parameter = parameters[i];
+                    var attr = parameter.GetCustomAttribute<InjectAttribute>();
+                    var inject = Get(parameter.ParameterType, attr?.Id);
+                    if (inject == null)
+                    {
+                        Debug.LogWarning($"Can't inject {parameter.ParameterType} to {obj} {parameter.Name}");
+                        continue;
+                    }
+
+                    injects[i] = Get(parameter.ParameterType, attr?.Id);
+                }
+
+                method.Invoke(obj, injects);
+            }
         }
         
         private static IEnumerable<FieldInfo> GetFields(Type type)
@@ -176,11 +221,16 @@ namespace VG.Utilites
             return type == null ? Enumerable.Empty<FieldInfo>() : type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Union(GetFields(type.BaseType));
         }
+        private static IEnumerable<MethodInfo> GetMethods(Type type)
+        {
+            return type == null ? Enumerable.Empty<MethodInfo>() : type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Union(GetMethods(type.BaseType));
+        }
         private static void InjectToField(FieldInfo field, object obj, object value)
         {
             if (value == null)
             {
-                Debug.LogWarning($"Can't injected {field.FieldType} to {obj} {field.Name}");
+                Debug.LogWarning($"Can't inject {field.FieldType} to {obj} {field.Name}");
                 return;
             }
 
@@ -217,6 +267,18 @@ namespace VG.Utilites
             }
 
             return i1 == string1.Length && i2 == string2.Length;
+        }
+        
+        public readonly struct TypeObject
+        {
+            public TypeObject(Type type, object o)
+            {
+                Type = type;
+                Object = o;
+            }
+        
+            public Type Type { get; }
+            public object Object { get; }
         }
     }
 }

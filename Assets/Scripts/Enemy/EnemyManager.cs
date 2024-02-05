@@ -5,7 +5,7 @@ using VG.Utilites;
 namespace ShootEmUp
 {
     [InjectTo]
-    public sealed class EnemyManager
+    public sealed class EnemyManager : Listener, IGameStartListener
     {
         [Inject] private readonly PoolFactory<Enemy> _pool;
         [Inject] private readonly BulletSystem _bulletSystem;
@@ -13,6 +13,20 @@ namespace ShootEmUp
         [Inject] private readonly Player _player;
         [Inject] private readonly EnemyPositions _enemyPositions;
         
+        private readonly Transform _active;
+        private readonly Transform _disable;
+
+        public EnemyManager(Transform active, Transform disable)
+        {
+            _active = active;
+            _disable = disable;
+        }
+        
+        public void OnStartGame()
+        {
+            _pool.ActiveContainer = _active;
+            _pool.DisableContainer = _disable;
+        }
         public bool TrySpawnEnemy()
         {
             if(!_pool.TryGet(out var enemy))
@@ -22,21 +36,22 @@ namespace ShootEmUp
             enemy.transform.position = spawnPosition.position;
                     
             var attackPosition = _enemyPositions.RandomAttackPosition();
-            enemy.MoveAgent.SetDestination(attackPosition.position);
+            enemy.Get<EnemyMoveAgent>().SetDestination(attackPosition.position);
+
+            enemy.Get<EnemyAttackAgent>().SetTarget(_player);
                     
-            enemy.AttackAgent.SetTarget(_player);
-                    
-            enemy.HitPointsComponent.OnDeath += OnDeath;
-            enemy.AttackAgent.OnFired += OnFired;
+            enemy.Get<HitPointsComponent>().OnDeath += OnDeath;
+            enemy.Get<EnemyAttackAgent>().OnFired += OnFired;
 
             return true;
         }
+        
         private void OnDeath(Unit unit)
         {
             if (unit is Enemy enemy)
             {
-                enemy.HitPointsComponent.OnDeath -= OnDeath;
-                enemy.AttackAgent.OnFired -= OnFired;
+                enemy.Get<HitPointsComponent>().OnDeath -= OnDeath;
+                enemy.Get<EnemyAttackAgent>().OnFired -= OnFired;
 
                 _pool.Put(enemy);
             }

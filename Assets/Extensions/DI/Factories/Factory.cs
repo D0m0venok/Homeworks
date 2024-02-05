@@ -15,9 +15,7 @@ namespace VG.Utilites
         {
             var instance = Object.Instantiate(_prefab);
             
-            var type = typeof(T);
-            if(type.GetCustomAttribute<InjectToAttribute>() != null)
-                DI.Container.InjectTo(type, instance);
+            DI.Container.InjectTo(instance);
 
             return instance;
         }

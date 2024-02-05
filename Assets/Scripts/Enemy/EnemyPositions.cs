@@ -3,17 +3,21 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
-    [InjectTo]
     public sealed class EnemyPositions
     {
-        [Inject] private Transform[] _spawnPositions;
-        [Inject] private Transform[] _attackPositions;
+        private readonly Transform[] _spawnPositions; 
+        private readonly Transform[] _attackPositions;
+
+        public EnemyPositions(Transform[] spawnPositions, Transform[] attackPositions)
+        {
+            _spawnPositions = spawnPositions;
+            _attackPositions = attackPositions;
+        }
         
         public Transform RandomSpawnPosition()
         {
             return RandomTransform(_spawnPositions);
         }
-
         public Transform RandomAttackPosition()
         {
             return RandomTransform(_attackPositions);

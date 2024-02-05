@@ -4,7 +4,7 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
-    [InjectTo]
+    [InstallMono, InjectTo]
     public sealed class PauseGameController : Entity, IGameStartListener, IGameFinishListener
     {
         [SerializeField] private Button _pauseButton;

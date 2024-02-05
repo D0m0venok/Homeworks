@@ -28,8 +28,20 @@ namespace VG.Utilites
             
             _installs = _installs.Distinct().ToArray();
         }
-        
-        public string Id { get { return _id; } }
+
+        public string Id
+        {
+            get
+            {
+                return _idType switch
+                {
+                    IdType.None => null,
+                    IdType.FromName => name,
+                    IdType.Custom => _id,
+                    _ => null
+                };
+            }
+        }
         public IEnumerable<Component> Installs { get { return _installs; } }
     }
 }

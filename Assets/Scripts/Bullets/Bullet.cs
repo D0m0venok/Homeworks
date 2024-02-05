@@ -3,9 +3,9 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
-    [InstallMono(InstallType.PoolFactory, 20)]
+    [InstallMono(InstallType.PoolFactory), InjectTo]
     [RequireComponent(typeof(Collider2D))]
-    public sealed class Bullet : Entity, IAwake,
+    public sealed class Bullet : Entity, IStart,
         IFixedUpdate, ICollisionEnter2D
     {
         [InjectLocal] private SpriteRenderer _spriteRenderer;
@@ -15,11 +15,10 @@ namespace ShootEmUp
 
         private int _damage;
         private bool _isPlayer;
-        private readonly RigidbodyStateController _rigidbodyStateController = new ();
 
-        void IAwake.OnEntityAwake()
+        void IStart.OnStart()
         {
-            _rigidbodyStateController.Init(_rigidbody2D);
+            Add(new RigidbodyStateController(_rigidbody2D));
         }
         void ICollisionEnter2D.OnEntityCollisionEnter2D(Collision2D other)
         {
@@ -47,10 +46,10 @@ namespace ShootEmUp
             if (!other.TryGetComponent(out Unit unit))
                 return;
 
-            if (_isPlayer == unit.TeamComponent.IsPlayer)
+            if (_isPlayer == unit.Get<TeamComponent>().IsPlayer)
                 return;
 
-            unit.HitPointsComponent.TakeDamage(_damage);
+            unit.Get<HitPointsComponent>().TakeDamage(_damage);
         }
     }
 }

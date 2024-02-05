@@ -1,8 +1,9 @@
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class WeaponComponent
+    public sealed class WeaponComponent : EntityComponent
     {
         private readonly Transform _firePoint;
 

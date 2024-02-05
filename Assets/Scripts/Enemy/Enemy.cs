@@ -1,31 +1,27 @@
 using System;
-using System.Collections.Generic;
 using VG.Utilites;
 
 namespace ShootEmUp
 {
-    [InstallMono(InstallType.PoolFactory, 7, 7)]
+    [InstallMono(InstallType.PoolFactory, 0, 7), InjectTo]
     public sealed class Enemy : Unit
     {
-        [Inject] private EnemySettings _enemySettings;
         private float _positionInaccuracy;
         private float _shootDelay;
 
-        public EnemyAttackAgent AttackAgent { get; private set; }
-        public EnemyMoveAgent MoveAgent { get; private set; }
-
-        public override void OnEntityAwake()
+        [Inject]
+        public void Construct(EnemySettings enemySettings)
         {
-            _isPlayer = _enemySettings.IsPlayer;
-            _speed = _enemySettings.Speed;
-            _hitPoint = _enemySettings.HitPoint;
-            _positionInaccuracy = _enemySettings.PositionInaccuracy;
-            _shootDelay = _enemySettings.ShootDelay;
-
-            MoveAgent = new EnemyMoveAgent(this, _positionInaccuracy);
-            AttackAgent = new EnemyAttackAgent(this, _shootDelay);
+            _isPlayer = enemySettings.IsPlayer;
+            _speed = enemySettings.Speed;
+            _hitPoint = enemySettings.HitPoint;
+            _positionInaccuracy = enemySettings.PositionInaccuracy;
+            _shootDelay = enemySettings.ShootDelay;
             
-            base.OnEntityAwake();
+            Add(new EnemyMoveAgent(_positionInaccuracy));
+            Add(new EnemyAttackAgent(_shootDelay));
+            
+            base.Construct();
         }
         
         [Serializable]

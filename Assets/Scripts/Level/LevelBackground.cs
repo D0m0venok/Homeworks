@@ -4,32 +4,29 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class LevelBackground : IFixedUpdate
+    public sealed class LevelBackground : Listener, IUpdate
     {
-        [Inject] private Transform _myTransform;
-        [Inject] private Params _params;
+        private readonly Transform _myTransform;
         private readonly float _startPositionY;
         private readonly float _endPositionY;
         private readonly float _movingSpeedY;
         private readonly float _positionX;
         private readonly float _positionZ;
-
-        public LevelBackground()
+        
+        public LevelBackground(Transform myTransform, Params @params)
         {
-            ListenersManager.Add(this);
-            
-            DI.Container.InjectTo(this);
+            _myTransform = myTransform;
             
             var position = _myTransform.position;
             _positionX = position.x;
             _positionZ = position.z;
             
-            _startPositionY = _params.StartPositionY;
-            _endPositionY = _params.EndPositionY;
-            _movingSpeedY = _params.MovingSpeedY;
+            _startPositionY = @params.StartPositionY;
+            _endPositionY = @params.EndPositionY;
+            _movingSpeedY = @params.MovingSpeedY;
         }
 
-        void IFixedUpdate.OnEntityFixedUpdate()
+        void IUpdate.OnEntityUpdate()
         {
             if (_myTransform.position.y <= _endPositionY)
             {
@@ -42,7 +39,7 @@ namespace ShootEmUp
 
             _myTransform.position -= new Vector3(
                 _positionX,
-                _movingSpeedY * Time.fixedDeltaTime,
+                _movingSpeedY * Time.deltaTime,
                 _positionZ
             );
         }

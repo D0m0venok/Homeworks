@@ -10,11 +10,14 @@ namespace VG.Utilites
     }
 
     [AttributeUsage(AttributeTargets.Class)]
-    public class InstallMonoAttribute : InjectToAttribute
+    public class InstallMonoAttribute : Attribute
     {
         public InstallMonoAttribute()
         {
-            
+        }
+        public InstallMonoAttribute(bool idFromName)
+        {
+            IdFromName = idFromName;
         }
         public InstallMonoAttribute(InstallType type, int poolInitSize = 0, int poolMaxSize = int.MaxValue)
         {
@@ -22,8 +25,8 @@ namespace VG.Utilites
             PoolInitSize = poolInitSize;
             PoolMaxSize = poolMaxSize;
         }
-        
-        public bool IdFromName;
+
+        public bool IdFromName { get; }
         public InstallType Type { get; }
         public int PoolInitSize { get; }
         public int PoolMaxSize { get; }

@@ -1,16 +1,16 @@
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public class BulletSystemInstaller
+    public class BulletSystemInstaller : MonoInstaller
     {
         [SerializeField] private Transform _bulletsPoolContainer;
         [SerializeField] private Transform _worldTransform;
-
-        public void InstallBindings()
+        
+        public override void Install(DIContainer container)
         {
-            //Container.Bind<BulletPool>().AsSingle().WithArguments(_bulletsPoolContainer);
-            //Container.Bind<BulletSystem>().AsSingle().WithArguments(_worldTransform);
+            container.Install(new BulletSystem(_worldTransform, _bulletsPoolContainer));
         }
     }
 }

@@ -6,10 +6,10 @@ namespace ShootEmUp
     public class RigidbodyStateController : EntityComponent,
         IGameFinishListener, IGamePauseListener, IGameResumeListener
     {
-        protected Rigidbody2D _rigidbody2D;
+        protected readonly Rigidbody2D _rigidbody2D;
         private Vector2 _cacheVelocity;
 
-        public void Init(Rigidbody2D rigidbody2D)
+        public RigidbodyStateController(Rigidbody2D rigidbody2D)
         {
             _rigidbody2D = rigidbody2D;
         }

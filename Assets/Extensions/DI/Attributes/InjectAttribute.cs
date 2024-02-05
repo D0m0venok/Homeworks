@@ -2,7 +2,7 @@
 
 namespace VG.Utilites
 {
-    [AttributeUsage(AttributeTargets.Field)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method | AttributeTargets.Parameter)]
     public class InjectAttribute : Attribute
     {
         public InjectAttribute()

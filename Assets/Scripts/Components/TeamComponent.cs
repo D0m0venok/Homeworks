@@ -1,6 +1,8 @@
+using VG.Utilites;
+
 namespace ShootEmUp
 {
-    public sealed class TeamComponent
+    public sealed class TeamComponent : EntityComponent
     {
         public TeamComponent(bool isPlayer)
         {

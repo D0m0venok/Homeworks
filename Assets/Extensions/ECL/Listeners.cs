@@ -90,7 +90,10 @@ namespace VG.Utilites
         }
         private void Remove(Type type, TListener listener)
         {
-            if(_busy == type && _dictionary.ContainsKey(type))
+            if(!_dictionary.ContainsKey(type))
+                return;
+            
+            if(_busy == type)
                 _remove[type].Add(listener);
             else
                 _dictionary[type].Remove(listener);

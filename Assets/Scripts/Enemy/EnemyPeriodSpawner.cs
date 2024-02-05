@@ -4,16 +4,11 @@ using VG.Utilites;
 namespace ShootEmUp
 {
     [InjectTo]
-    public sealed class EnemyPeriodSpawner : IUpdate
+    public sealed class EnemyPeriodSpawner : Listener, IUpdate
     {
         [Inject] private readonly EnemyManager _enemyManager;
         private readonly float _delayBetweenSpawnsTime = 1f;
         private float _lastSpawnTime;
-
-        public EnemyPeriodSpawner()
-        {
-            ListenersManager.Add(this);
-        }
         
         void IUpdate.OnEntityUpdate()
         {

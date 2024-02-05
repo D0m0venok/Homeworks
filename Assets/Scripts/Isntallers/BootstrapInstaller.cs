@@ -1,23 +1,24 @@
 using UnityEngine;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public class BootstrapInstaller
+    public class BootstrapInstaller : MonoInstaller
     {
-        [SerializeField] private GameManager _gameManager;
-        [SerializeField] private Player _player;
         [SerializeField] private Transform _levelBackground;
         [SerializeField] private LevelBackground.Params _levelBackgroundParameters;
         [SerializeField] private Transform[] _levelBounds;
-
-        public void InstallBindings()
+        
+        public override void Install(DIContainer container)
         {
-            // Container.Bind<GameManager>().FromInstance(_gameManager).AsSingle();
-            // Container.Bind<Player>().FromInstance(_player).AsSingle();
-            // Container.BindInterfacesAndSelfTo<PlayerController>().AsSingle();
-            // Container.BindInterfacesTo<InputSystemManager>().AsSingle();
-            // Container.BindInterfacesTo<LevelBackground>().AsSingle().WithArguments(_levelBackground, _levelBackgroundParameters);
-            // Container.Bind<LevelBounds>().AsSingle().WithArguments(_levelBounds);
+            container.Install(new LevelBackground(_levelBackground, _levelBackgroundParameters));
+            container.Install(new LevelBounds(_levelBounds));
+            
+            container.Install<PlayerController>();
+            //container.Install<InputSystemManager>();
+            var input = new InputSystemManager();
+            container.Install<IMoveInput>(input);
+            container.Install<IFireInput>(input);
         }
     }
 }

@@ -42,11 +42,15 @@ namespace VG.Utilites
 
             DI.Container.Install(_container);
             
-            foreach (var (type, monoBehaviour) in _injects)
+            foreach (var typeObject in _container.GetObjects())
             {
-                DI.Container.InjectTo(type, monoBehaviour);
+                DI.Container.InjectTo(typeObject.Type, typeObject.Object);
             }
-            _injects.Clear();
+            foreach (var typeObject in _monoInjects)
+            {
+                DI.Container.InjectTo(typeObject.Type, typeObject.Object);
+            }
+            _monoInjects.Clear();
         }
         private void OnDestroy()
         {
@@ -100,7 +104,8 @@ namespace VG.Utilites
                     break;
                 case InstallType.PoolFactory:
                     var poolFactoryType = typeof(PoolFactory<>).MakeGenericType(type);
-                    Install(poolFactoryType, poolFactoryType.GetConstructor(new []{type, typeof(int), typeof(int)})?.Invoke(new object[]{obj, attr.PoolInitSize, attr.PoolMaxSize}), nameId);
+                    Install(poolFactoryType, poolFactoryType.GetConstructor(new []{type, typeof(int), typeof(int)})?
+                        .Invoke(new object[]{obj, attr.PoolInitSize, attr.PoolMaxSize}), nameId);
                     break;
             }
         }
@@ -111,12 +116,12 @@ namespace VG.Utilites
                 var type = o.GetType();
 
                 InstallMono(type, o);
-
+                
                 if (o is MonoInstaller installer)
                     installer.Install(_container);
-
+                
                 if(type.GetCustomAttribute<InjectToAttribute>() != null)
-                    _injects.Add(new Tuple<Type, MonoBehaviour>(type, o));
+                    _monoInjects.Add(new DIContainer.TypeObject(type, o));
             }
         }
         private void InstallPrefabs(string path)
@@ -131,13 +136,17 @@ namespace VG.Utilites
             foreach (var o in Resources.LoadAll<ScriptableObject>(path + "/"))
             {
                 var type = o.GetType();
+                
                 var attr = type.GetCustomAttribute<InstallScriptableAttribute>();
                 if (attr != null)
                     Install(type, o, attr.Id);
+                
+                if (o is ScriptableInstaller installer)
+                    installer.Install(_container);
             }
         }
 
         private readonly DIContainer _container = new DIContainer();
-        private readonly List<Tuple<Type, MonoBehaviour>> _injects = new List<Tuple<Type, MonoBehaviour>>();
+        private readonly List<DIContainer.TypeObject> _monoInjects = new List<DIContainer.TypeObject>(); 
     }
 }

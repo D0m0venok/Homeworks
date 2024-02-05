@@ -6,10 +6,9 @@ namespace ShootEmUp
     {
         private readonly float _speed;
 
-        public MoveComponent(Rigidbody2D rigidbody2D, float speed)
+        public MoveComponent(Rigidbody2D rigidbody2D, float speed) : base(rigidbody2D)
         {
             _speed = speed;
-            Init(rigidbody2D);
         }
         
         public void MoveByRigidbodyVelocity(Vector2 vector)

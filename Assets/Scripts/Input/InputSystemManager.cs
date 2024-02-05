@@ -5,7 +5,7 @@ using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class InputSystemManager : 
+    public sealed class InputSystemManager : Listener,
         IMoveInput, IFireInput, IFixedUpdate,
         IGameStartListener, IGameFinishListener,
         IGamePauseListener, IGameResumeListener
@@ -15,15 +15,11 @@ namespace ShootEmUp
 
         private Controls _controls;
 
-        public InputSystemManager()
-        {
-            ListenersManager.Add(this);
-        }
         public void OnStartGame()
         {
             _controls = new Controls();
 
-            _controls.Main.Fire.started += SubscribeFire();
+            //_controls.Main.Fire.started += SubscribeFire();
             
             _controls.Enable();
         }
@@ -45,6 +41,9 @@ namespace ShootEmUp
         {
             var moveInput = _controls.Main.Move.ReadValue<float>();
             OnMoved(new Vector2(moveInput, 0) * Time.fixedDeltaTime);
+
+            if (_controls.Main.Fire.inProgress)
+                OnFired.Invoke();
         }
 
         private Action<InputAction.CallbackContext> SubscribeFire()

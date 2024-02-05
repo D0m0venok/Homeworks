@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Extensions;
+﻿using Extensions;
 using UnityEngine;
 
 namespace VG.Utilites
@@ -12,9 +11,7 @@ namespace VG.Utilites
         {
             var instance = base.Create();
             
-            var type = typeof(T);
-            if(type.GetCustomAttribute<InjectToAttribute>() != null)
-                DI.Container.InjectTo(type, instance);
+            DI.Container.InjectTo(instance);
 
             return instance;
         }

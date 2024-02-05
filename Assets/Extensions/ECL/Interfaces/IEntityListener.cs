@@ -4,13 +4,13 @@ namespace VG.Utilites
 {
     public interface IEntityListener : IListener{}
     
-    public interface IAwake : IEntityListener
+    public interface IAwake
     {
-        void OnEntityAwake();
+        void OnAwake();
     }
-    public interface IStart : IEntityListener
+    public interface IStart
     {
-        void OnEntityStart();
+        void OnStart();
     }
     public interface IEnable : IEntityListener
     {

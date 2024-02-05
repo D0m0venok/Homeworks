@@ -6,12 +6,10 @@ namespace ShootEmUp
     public sealed class EnemyMoveAgent : EntityComponent, IFixedUpdate
     {
         private readonly float _positionInaccuracy;
-        private readonly Enemy _enemy;
         private Vector2 _destination;
 
-        public EnemyMoveAgent(Enemy enemy, float positionInaccuracy)
+        public EnemyMoveAgent(float positionInaccuracy)
         {
-            _enemy = enemy;
             _positionInaccuracy = positionInaccuracy;
         }
         
@@ -22,7 +20,7 @@ namespace ShootEmUp
             if (IsReached)
                 return;
             
-            var vector = _destination - (Vector2) _enemy.transform.position;
+            var vector = _destination - (Vector2) Entity.transform.position;
             if (vector.magnitude <= _positionInaccuracy)
             {
                 IsReached = true;
@@ -30,7 +28,7 @@ namespace ShootEmUp
             }
             
             var direction = vector.normalized * Time.fixedDeltaTime;
-            _enemy.MoveComponent.MoveByRigidbodyVelocity(direction);
+            Entity.Get<MoveComponent>().MoveByRigidbodyVelocity(direction);
         }
         public void SetDestination(Vector2 endPoint)
         {

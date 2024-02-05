@@ -1,16 +1,15 @@
 using System;
+using VG.Utilites;
 
 namespace ShootEmUp
 {
-    public sealed class HitPointsComponent
+    public sealed class HitPointsComponent : EntityComponent
     {
-        private readonly Unit _unit;
         private int _hitPoints;
         private readonly int _cacheHitPoint;
 
-        public HitPointsComponent(Unit unit, int hitPoints)
+        public HitPointsComponent(int hitPoints)
         {
-            _unit = unit;
             _cacheHitPoint = _hitPoints = hitPoints;
         }
         public event Action<Unit> OnDeath;
@@ -25,7 +24,7 @@ namespace ShootEmUp
             _hitPoints -= damage;
             if (_hitPoints <= 0)
             {
-                OnDeath?.Invoke(_unit);
+                OnDeath?.Invoke((Unit)Entity);
                 _hitPoints = _cacheHitPoint;
             }
         }

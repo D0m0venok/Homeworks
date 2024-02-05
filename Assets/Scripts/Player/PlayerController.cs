@@ -5,7 +5,7 @@ using VG.Utilites;
 namespace ShootEmUp
 {
     [InjectTo]
-    public sealed class PlayerController : IGameStartListener, IGameFinishListener
+    public sealed class PlayerController : Listener, IGameStartListener, IGameFinishListener
     {
         [Inject] private readonly Player _player;
         [Inject] private readonly IMoveInput _moveInput;
@@ -14,36 +14,23 @@ namespace ShootEmUp
         [Inject] private readonly BulletSystem _bulletSystem;
         [Inject] private readonly Settings _settings;
 
-        public PlayerController()
-        {
-            ListenersManager.Add(this);
-        }
-        // public PlayerController(Player player, IMoveInput moveInput, IFireInput fireInput, 
-        //     FinishGameController finishGameController, BulletSystem bulletSystem, Settings settings)
-        // {
-        //     _player = player;
-        //     _moveInput = moveInput;
-        //     _fireInput = fireInput;
-        //     _finishGameController = finishGameController;
-        //     _bulletSystem = bulletSystem;
-        //     _settings = settings.BulletSettings;
-        // }
         public void OnStartGame()
         {
-            _player.HitPointsComponent.OnDeath += OnDeath;
-            _moveInput.OnMoved += _player.MoveComponent.MoveByRigidbodyVelocity;
+            _player.Get<HitPointsComponent>().OnDeath += OnDeath;
+            _moveInput.OnMoved += _player.Get<MoveComponent>().MoveByRigidbodyVelocity;
             _fireInput.OnFired += OnFired;
         }
         public void OnFinishGame()
         {
-            _player.HitPointsComponent.OnDeath -= OnDeath;
-            _moveInput.OnMoved += _player.MoveComponent.MoveByRigidbodyVelocity;
+            _player.Get<HitPointsComponent>().OnDeath -= OnDeath;
+            _moveInput.OnMoved += _player.Get<MoveComponent>().MoveByRigidbodyVelocity;
             _fireInput.OnFired += OnFired;
         }
         private void OnFired()
         {
+            var weaponComponent = _player.Get<WeaponComponent>();
             _bulletSystem.FlyBulletByArgs(new Args
-                (_player.WeaponComponent.Position, _player.WeaponComponent.Rotation * Vector3.up * _settings.BulletSettings.Speed, 
+                (weaponComponent.Position, weaponComponent.Rotation * Vector3.up * _settings.BulletSettings.Speed, 
                     _settings.BulletSettings.Color, _settings.BulletSettings.PhysicsLayer, _settings.BulletSettings.Damage, true));
         }
         private void OnDeath(Unit unit)

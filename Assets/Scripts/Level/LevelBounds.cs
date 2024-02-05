@@ -6,20 +6,17 @@ namespace ShootEmUp
 {
     public sealed class LevelBounds
     {
-        [Inject] private Transform[] _borders;
         private readonly float _minX;
         private readonly float _maxX;
         private readonly float _minY;
         private readonly float _maxY;
-
-        public LevelBounds()
+        
+        public LevelBounds(Transform[] borders)
         {
-            DI.Container.InjectTo(this);
-            
-            _minX = _borders.Min(b => b.position.x);
-            _maxX = _borders.Max(b => b.position.x);
-            _minY = _borders.Min(b => b.position.y);
-            _maxY = _borders.Max(b => b.position.y);
+            _minX = borders.Min(b => b.position.x);
+            _maxX = borders.Max(b => b.position.x);
+            _minY = borders.Min(b => b.position.y);
+            _maxY = borders.Max(b => b.position.y);
         }
 
         public bool InBounds(Vector3 position)

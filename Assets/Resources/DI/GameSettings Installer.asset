@@ -12,13 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06d01efff2c42309cfc65df3e96525a, type: 3}
   m_Name: GameSettings Installer
   m_EditorClassIdentifier: 
-  _enemiesPool:
-    InitialCount: 7
-    MaxCount: 7
-    EnemyPrefab: {fileID: 8906090459634147754, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
-  _booletsPool:
-    InitialCount: 20
-    BulletPrefab: {fileID: 201757604187811891, guid: 5fe72886874b4e445b06cf777ca4920d, type: 3}
   _enemyManager:
     BulletSettings:
       PhysicsLayer: 13
@@ -40,4 +33,4 @@ MonoBehaviour:
     IsPlayer: 0
     Speed: 5
     PositionInaccuracy: 0.25
-    ShootDelay: 1
+    ShootDelay: 2

@@ -22,13 +22,13 @@ namespace ShootEmUp
         }
         void ICollisionEnter2D.OnEntityCollisionEnter2D(Collision2D other)
         {
-            _pool?.Put(this);
             DealDamage(other.gameObject);
+            _pool.Put(this);
         }
         void IFixedUpdate.OnEntityFixedUpdate()
         {
             if(!_levelBounds.InBounds(transform.position))
-                _pool?.Put(this);
+                _pool.Put(this);
         }
 
         public void SetBullet(Args args)
@@ -45,7 +45,7 @@ namespace ShootEmUp
         {
             if (!other.TryGetComponent(out Unit unit))
                 return;
-
+            
             if (_isPlayer == unit.Get<TeamComponent>().IsPlayer)
                 return;
 

@@ -94,9 +94,6 @@ namespace VG.Utilites
         private void Awake()
         {
             _listeners.Add(this);
-            //GetComponents(this);
-            
-            //_listeners.ForEach<IAwake>(l => l.OnEntityAwake());
             
             if(this is IAwake awake)
                 awake.OnAwake();
@@ -105,7 +102,6 @@ namespace VG.Utilites
         {
             if(this is IStart start)
                 start.OnStart();
-            //_listeners.ForEach<IStart>(l => l.OnEntityStart());
         }
         private void Update()
         {
@@ -114,14 +110,6 @@ namespace VG.Utilites
             
             _starts.ForEach(s => s.OnStart());
             _starts.Clear();
-        }
-        private void LateUpdate()
-        {
-            
-        }
-        private void FixedUpdate()
-        {
-            
         }
         private void OnEnable()
         {

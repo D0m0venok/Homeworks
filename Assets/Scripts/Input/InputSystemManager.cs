@@ -18,8 +18,6 @@ namespace ShootEmUp
         public void OnStartGame()
         {
             _controls = new Controls();
-
-            //_controls.Main.Fire.started += SubscribeFire();
             
             _controls.Enable();
         }
@@ -41,8 +39,8 @@ namespace ShootEmUp
         {
             var moveInput = _controls.Main.Move.ReadValue<float>();
             OnMoved(new Vector2(moveInput, 0) * Time.fixedDeltaTime);
-
-            if (_controls.Main.Fire.inProgress)
+            
+            if (_controls.Main.Fire.triggered)
                 OnFired.Invoke();
         }
 

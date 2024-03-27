@@ -16,7 +16,7 @@ MonoBehaviour:
     InitialCount: 7
     MaxCount: 7
     EnemyPrefab: {fileID: 8906090459634147754, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
-  _booletsPool:
+  _bulletsPool:
     InitialCount: 20
     BulletPrefab: {fileID: 201757604187811891, guid: 5fe72886874b4e445b06cf777ca4920d, type: 3}
   _enemyManager:

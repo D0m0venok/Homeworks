@@ -33,8 +33,8 @@ namespace ShootEmUp
         public void OnFinishGame()
         {
             _player.HitPointsComponent.OnDeath -= OnDeath;
-            _moveInput.OnMoved += _player.MoveComponent.MoveByRigidbodyVelocity;
-            _fireInput.OnFired += OnFired;
+            _moveInput.OnMoved -= _player.MoveComponent.MoveByRigidbodyVelocity;
+            _fireInput.OnFired -= OnFired;
         }
         private void OnFired()
         {

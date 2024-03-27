@@ -2150,9 +2150,9 @@ MonoBehaviour:
   _player: {fileID: 4414282821800802405}
   _levelBackgrount: {fileID: 8010320557783749713}
   _levelBackgrountParametrs:
-    _startPositionY: 19
-    _endPositionY: -38
-    _movingSpeedY: 5
+    _startPositionY: 0
+    _endPositionY: 0
+    _movingSpeedY: 0
   _levelBounds:
   - {fileID: 6563466540960878063}
   - {fileID: 1668159544493171190}
